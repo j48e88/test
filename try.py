@@ -304,7 +304,6 @@ if uploaded_file2 is not None:
         st.write(f"There are in total {total} flights within this month.")
 
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 
