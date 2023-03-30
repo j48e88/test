@@ -2,25 +2,47 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+
+# Set page configuration
+st.set_page_config(page_title="Employee on Duty Record", page_icon=":bar_chart", layout="wide")
+st.title("Crew Data Analysis")
+
+# Upload data
+uploaded_file = st.file_uploader("Upload an Excel file", type="xlsx")
+
 # Define a function to read the uploaded Excel file and return a DataFrame
 @st.cache_data
 def read_data(file):
     df = pd.read_excel(file, engine='openpyxl', usecols='A:AL', nrows=5000)
+    blockon = pd.to_datetime(df['Block_On_Time'], format='%H:%M:%S')
+    blockoff = pd.to_datetime(df['Block_Off_Time'], format='%H:%M:%S')
+
+    blockon_decimal = blockon.dt.hour + blockon.dt.minute/60 + blockon.dt.second/3600
+    blockoff_decimal = blockoff.dt.hour + blockoff.dt.minute/60 + blockoff.dt.second/3600
+
+    blockon = blockon + pd.DateOffset(days=1)
+    diff = blockon - blockoff
+
+    diff_str = diff.astype(str)
+    diff_str = diff_str.apply(lambda x: x.split()[-1])
+
+    df.insert(3, "Block_Diff", diff_str)
+
+    diff = pd.to_datetime(df['Block_Diff'], format='%H:%M:%S')
+    diff_decimal = round(diff.dt.hour + diff.dt.minute/60 + diff.dt.second/3600, 0)
+
+    df.insert(4, "Block_Diff_Round", diff_decimal)
+    df['Block_Diff_Round'] = df['Block_Diff_Round'].fillna(0)
     return df
 
-# Set page configuration
-st.set_page_config(page_title="Employee on Duty Record", page_icon=":bar_chart", layout="wide")
-
-# Upload data
-uploaded_file = st.file_uploader("Upload an Excel file", type="xlsx")
 if uploaded_file is not None:
     df = read_data(uploaded_file)
 
     # Sidebar for user input and there is no default value, also the options are sorted
     with st.sidebar:
         st.markdown("<h1 style='text-align: center; color: black; font-size: 30px;'>Please Filter Here:</h1>", unsafe_allow_html=True)
-        departure = st.multiselect("Select the Departure:", options=sorted(df["Departure"].unique()), default=sorted(df["Departure"].unique()), key="departure")
-        destination = st.multiselect("Select the Destination:", options=sorted(df["Destination"].unique()), default=sorted(df["Destination"].unique()), key="destination")
+        departure = st.multiselect("Select the Departure:", options=sorted(df["Departure"].astype(str).unique()), default=sorted(df["Departure"].astype(str).unique()), key="departure")
+        destination = st.multiselect("Select the Destination:", options=sorted(df["Destination"].astype(str).unique()), default=sorted(df["Destination"].astype(str).unique()), key="destination")
         ac_type = st.multiselect("Select the Aircraft Type:", options=df["AcType"].unique(), default=df["AcType"].unique(), key="ac_type")
         int1 = st.multiselect("Select the Block_Diff:", options=sorted(df["Block_Diff_Round"].unique()), default=sorted(df["Block_Diff_Round"].unique()), key="Block_Diff")
 
@@ -51,9 +73,9 @@ if uploaded_file is not None:
         departure_counts = df_filtered['Departure'].value_counts()
 
         if not blockdiffround_counts.empty:
-        	most_common_blockdiff = blockdiffround_counts.index[0]
-        	most_common_count = blockdiffround_counts.iloc[0]
-        	st.write(f"<h2 style='font-size:20px;'>Most common flight time: <b><span style='font-size: 25px; color: blue; font-weight:bold;'>{most_common_blockdiff}</span></b> ({most_common_count} flights)</h2>", unsafe_allow_html=True)
+            most_common_blockdiff = blockdiffround_counts.index[0]
+            most_common_count = blockdiffround_counts.iloc[0]
+            st.write(f"<h2 style='font-size:20px;'>Most common flight time: <b><span style='font-size: 25px; color: blue; font-weight:bold;'>{most_common_blockdiff}</span></b> ({most_common_count} flights)</h2>", unsafe_allow_html=True)
         else:
             st.write("No destinations found matching the selected conditions")
 
