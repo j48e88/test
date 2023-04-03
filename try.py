@@ -452,6 +452,7 @@ if uploaded_file2 is not None:
 
     # Show the turnaround / layover flight for the selected stations
     if st.button("Show the turnaround / layover flight"):
+        data = []
         for i in range(len(filtered_data)):
             flight1 = filtered_data.iloc[i]
             valid_connection = False
@@ -470,7 +471,10 @@ if uploaded_file2 is not None:
                     turn.append(flight2['Flight_No'])
                     fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
                     remaintime = round(fdp - sum_fdt ,2)
-                    st.write(f"\nFlights {flight1['Flight_No']} ({flight1['DepStn']} and {flight1['ArrStn']}) and {flight2['Flight_No']} ({flight2['DepStn']} and {flight2['ArrStn']}) is a turnaround flight. The est.FDT is {sum_fdt} hr. The FDP is {fdp} hr. The remaining time is {remaintime} hr.")
+                    data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
+                                round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
+                    st.write(f"\nFlights {flight1['Flight_No']} ({flight1['DepStn']} and {flight1['ArrStn']}) and {flight2['Flight_No']} ({flight2['DepStn']} and {flight2['ArrStn']}) is a turnaround flight. The est.FDT is {round(sum_fdt, 2)} hr. The FDP is {round(fdp, 2)} hr. The remaining time is {round(remaintime, 2)} hr.")
 
             # check for invalid connections
             if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
@@ -478,7 +482,24 @@ if uploaded_file2 is not None:
                 invalid_count += 1
                 lay.append(flight1['Flight_No'])
                 fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
-                st.write(f"\nFlight {flight1['Flight_No']} ({flight1['DepStn']} and {flight1['ArrStn']}) is a layover flight. The est.FDT is {sum_fdt} hr. The FDP is {fdp} hr.")
+                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                            "", "", "",
+                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+                st.write(f"\nFlight {flight1['Flight_No']} ({flight1['DepStn']} and {flight1['ArrStn']}) is a layover flight. The est.FDT is {round(sum_fdt, 2)} hr. The FDP is {round(fdp, 2)} hr.")
+
+        # Display the results in a table with rounded numbers
+        if data:
+            columns = ["Flight 1", "Dep Station 1", "Arr Station 1",
+                       "Flight 2", "Dep Station 2", "Arr Station 2",
+                       "Est. FDT (hr)", "FDP (hr)", "Remaining Time (hr)", "Flight Type"]
+            df = pd.DataFrame(data, columns=columns)
+
+            # Apply formatting to the table
+            format_dict = {'Est. FDT (hr)': '{:.2f}', 'FDP (hr)': '{:.2f}', 'Remaining Time (hr)': '{:.2f}'}
+            formatted_df = df.style.format(format_dict)
+
+            st.table(formatted_df)
+
 
         st.write(f"\n{valid_count} pairs of flight(s) is/are turnaround.")
         st.write(f"{invalid_count} flight(s) is/are layover.")
