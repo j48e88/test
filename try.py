@@ -40,7 +40,7 @@ if uploaded_file is not None:
 
     # Sidebar for user input and there is no default value, also the options are sorted
     with st.sidebar:
-        st.markdown("<h1 style='text-align: center; color: black; font-size: 30px;'>Please Filter Here:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: left; color: grey; font-size: 30px;'>Please Filter Here:</h1>", unsafe_allow_html=True)
         st.markdown("<h1 style='text-align: center; color: black; font-size: 26px;'>--For Crew Analysis--</h1>", unsafe_allow_html=True)
         departure = st.multiselect("Select the Departure:", options=sorted(df["Departure"].astype(str).unique()), default=sorted(df["Departure"].astype(str).unique()), key="departure")
         destination = st.multiselect("Select the Destination:", options=sorted(df["Destination"].astype(str).unique()), default=sorted(df["Destination"].astype(str).unique()), key="destination")
@@ -122,6 +122,7 @@ if uploaded_file is not None:
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
+import base64
 
 st.title("Flight Data Analysis")
 # Add a file uploader to allow the user to upload an Excel file
@@ -318,7 +319,7 @@ if uploaded_file2 is not None:
     # Current page date
     st.sidebar.write("----------")
     st.sidebar.markdown("<h1 style='text-align: center; color: black; font-size: 18px;'>--For Flgiht Analysis within a month--</h1>", unsafe_allow_html=True)
-    current_page_date = st.sidebar.selectbox('Date', sorted(flight_info_by_date.keys()))
+    current_page_date = st.sidebar.selectbox('Date (For Flight Types)', sorted(flight_info_by_date.keys()))
 
     # Calculate the data range for the current page
     start_index = 0
@@ -350,7 +351,7 @@ if uploaded_file2 is not None:
     total_pages = len(crew_info) // rows_per_page + 1
 
     # Current page index
-    current_page_index = st.sidebar.number_input("Page", min_value=1, max_value=total_pages, value=1, step=1) - 1
+    current_page_index = st.sidebar.number_input("Page  (For Crew Info)", min_value=1, max_value=total_pages, value=1, step=1) - 1
 
     # Calculate the data range for the current page
     start_index = current_page_index * rows_per_page
@@ -498,7 +499,14 @@ if uploaded_file2 is not None:
             format_dict = {'Est. FDT (hr)': '{:.2f}', 'FDP (hr)': '{:.2f}', 'Remaining Time (hr)': '{:.2f}'}
             formatted_df = df.style.format(format_dict)
 
+            # Display the formatted table
             st.table(formatted_df)
+
+            # Export the table to a CSV file
+            csv = formatted_df.data.to_csv(index=False)
+            b64 = base64.b64encode(csv.encode()).decode()
+            href = f'<a href="data:file/csv;base64,{b64}" download="flight_data.csv">Download CSV File</a>'
+            st.markdown(href, unsafe_allow_html=True)
 
 
         st.write(f"\n{valid_count} pairs of flight(s) is/are turnaround.")
