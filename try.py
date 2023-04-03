@@ -41,6 +41,7 @@ if uploaded_file is not None:
     # Sidebar for user input and there is no default value, also the options are sorted
     with st.sidebar:
         st.markdown("<h1 style='text-align: center; color: black; font-size: 30px;'>Please Filter Here:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: black; font-size: 26px;'>--For Crew Analysis--</h1>", unsafe_allow_html=True)
         departure = st.multiselect("Select the Departure:", options=sorted(df["Departure"].astype(str).unique()), default=sorted(df["Departure"].astype(str).unique()), key="departure")
         destination = st.multiselect("Select the Destination:", options=sorted(df["Destination"].astype(str).unique()), default=sorted(df["Destination"].astype(str).unique()), key="destination")
         ac_type = st.multiselect("Select the Aircraft Type:", options=df["AcType"].unique(), default=df["AcType"].unique(), key="ac_type")
@@ -298,26 +299,78 @@ if uploaded_file2 is not None:
         st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Flights in groups:</h1>", unsafe_allow_html=True)
         for group, count in sorted(groups.items()):
             st.write(group[0], group[1], ':', count)
-    st.write('\n')
-    if st.button("Show Flights info"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Date: Aircraft Type: TurnArounds : Layovers : and Non-Regular:</h1>", unsafe_allow_html=True)
-        for (date, ac_type), num_turnaround in sorted(num_turnarounds.items()):
-            num_layover = num_layovers[(date, ac_type)]
-            num_nonreg = num_nonregular[(date, ac_type)]
-            st.write(f"{date} : {ac_type} : {num_turnaround} turnarounds, {num_layover} layovers, {num_nonreg} non-regular flights") 
-        # Calculate the total number of turnarounds, layovers, and non-regular flights
-        st.write('\n')
-        total_turnaround = sum(num_turnarounds.values())
-        total_layover = sum(num_layovers.values())
-        total_nonreg = sum(num_nonregular.values())
-        # Display the total number of turnarounds, layovers, and non-regular flights
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Total Number:</h1>", unsafe_allow_html=True)
-        st.write(f"Turnaround: {total_turnaround}, Layover: {total_layover}, Non-Regular Flights: {total_nonreg}")
+    
+    # Create a dictionary containing all flight information, keyed by date
+    flight_info_by_date = {}
+    for (date, ac_type), num_turnaround in sorted(num_turnarounds.items()):
+        num_layover = num_layovers[(date, ac_type)]
+        num_nonreg = num_nonregular[(date, ac_type)]
+        if date not in flight_info_by_date:
+            flight_info_by_date[date] = []
+        flight_info_by_date[date].append(f"{date} : {ac_type} : {num_turnaround} turnarounds, {num_layover} layovers, {num_nonreg} non-regular flights")
 
-    st.write('\n')
-    if st.button("Show Crew info"):
-        for date, crew_num in daily_crew_nums.items():
-            st.write(f"{date} : Required Crew = {crew_num}")
+    # Number of rows to display per page
+    rows_per_page = 10
+
+    # Total number of pages
+    total_pages = len(flight_info_by_date) // rows_per_page + 1
+
+    # Current page date
+    st.sidebar.write("----------")
+    st.sidebar.markdown("<h1 style='text-align: center; color: black; font-size: 18px;'>--For Flgiht Analysis within a month--</h1>", unsafe_allow_html=True)
+    current_page_date = st.sidebar.selectbox('Date', sorted(flight_info_by_date.keys()))
+
+    # Calculate the data range for the current page
+    start_index = 0
+    end_index = len(flight_info_by_date[current_page_date])
+    page_flight_info = flight_info_by_date[current_page_date][start_index:end_index]
+    total_turnaround = sum(num_turnarounds.values())
+    total_layover = sum(num_layovers.values())
+    total_nonreg = sum(num_nonregular.values())
+
+    # Display the current page's content
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Date: Aircraft Type: TurnArounds : Layovers : and Non-Regular:</h1>", unsafe_allow_html=True)
+    for item in page_flight_info:
+        st.write(item)
+
+    # Display pagination information
+    st.write(f"Date: {current_page_date}")
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Total Number of flights</h1>", unsafe_allow_html=True)
+    st.write(f"Turnaround: {total_turnaround}, Layover: {total_layover}, Non-Regular Flights: {total_nonreg}")
+
+    # Create a list of crew information, sorted by date
+    crew_info = []
+    for date, crew_num in sorted(daily_crew_nums.items()):
+        crew_info.append(f"{date} : Required Crew = {crew_num}")
+
+    # Number of rows to display per page
+    rows_per_page = 5
+
+    # Total number of pages
+    total_pages = len(crew_info) // rows_per_page + 1
+
+    # Current page index
+    current_page_index = st.sidebar.number_input("Page", min_value=1, max_value=total_pages, value=1, step=1) - 1
+
+    # Calculate the data range for the current page
+    start_index = current_page_index * rows_per_page
+    end_index = start_index + rows_per_page
+    page_crew_info = crew_info[start_index:end_index]
+
+    # Display the current page's content
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Crew Info:</h1>", unsafe_allow_html=True)
+    for item in page_crew_info:
+        st.write(item)
+
+    # Display pagination information
+    st.write(f"Page {current_page_index+1} of {total_pages}")
+
+    # Update start and end indices based on the current page index
+    start_index = current_page_index * rows_per_page
+    end_index = start_index + rows_per_page
+
+    # Display the total number of crew needed and aircraft type counts
+    if st.button("Show the estimated number"):
         st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Total Num of Crew Needed:</h1>", unsafe_allow_html=True)
         st.write(f"{total_crew_num}")
         st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
@@ -388,9 +441,19 @@ if uploaded_file2 is not None:
         df['Time_Range'] = time_ranges
 
     st.write('\n')
+    # Get the list of unique ArrStn and DepStn for populating the selectbox
+    stations = df[['ArrStn', 'DepStn']].stack().unique()
+
+    # Add a selectbox on the sidebar for selecting the station
+    selected_station = st.sidebar.selectbox('Select Station (HKG will show all the flight pairs)', stations)
+
+    # Filter the data for the selected station
+    filtered_data = df[(df['ArrStn'] == selected_station) | (df['DepStn'] == selected_station)]
+
+    # Show the turnaround / layover flight for the selected stations
     if st.button("Show the turnaround / layover flight"):
-        for i in range(len(df)):
-            flight1 = df.iloc[i]
+        for i in range(len(filtered_data)):
+            flight1 = filtered_data.iloc[i]
             valid_connection = False
 
             # check for valid connections
