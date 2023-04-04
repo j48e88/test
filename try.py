@@ -343,7 +343,7 @@ if uploaded_file2 is not None:
     total_pages2 = len(flight_info_by_date) // rows_per_page2 + 1
 
     # Current page date
-    current_page_date = st.sidebar.selectbox('Date (For Flight Types)', sorted(flight_info_by_date.keys()))
+    current_page_date = st.sidebar.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
 
     # Calculate the data range for the current page
     start_index = 0
@@ -355,7 +355,7 @@ if uploaded_file2 is not None:
 
     # Display the current page's content
     st.write("-----------------------------")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Date: Aircraft Type: TurnArounds : Layovers : and Non-Regular:</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Types of Flights</h1>", unsafe_allow_html=True)
     for item in page_flight_info:
         st.write(item)
 
@@ -479,7 +479,7 @@ if uploaded_file2 is not None:
 
     # Show the turnaround / layover flight for the selected stations
     st.write("-----------------------------")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Flight Types</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Flight Types in details</h1>", unsafe_allow_html=True)
     if st.button("Show the turnaround / layover flight"):
         data = []
         for i in range(len(filtered_data)):
