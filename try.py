@@ -238,7 +238,7 @@ if uploaded_file2 is not None:
         ac_dates[ac_type][date].append(count)
 
     # Calculate number of turnarounds for each group
-    num_turnarounds = {}
+    num_turnarounds = {} 
     for ac_type, dates in ac_dates.items():
         for date, counts in dates.items():
             num_turnarounds[(date, ac_type)] = sum([count // 2 for count in counts])
@@ -296,11 +296,36 @@ if uploaded_file2 is not None:
             daily_crew_nums[date] = daily_crew_nums.get(date, 0) + num_crew 
 
     # Print results sorted by date
-    if st.button("Show Flights grouped for Dep and Des"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Flights in groups:</h1>", unsafe_allow_html=True)
-        for group, count in sorted(groups.items()):
-            st.write(group[0], group[1], ':', count)
-    
+    # Get the list of flight groups sorted by date
+    flight_groups = sorted(groups.keys(), key=lambda x: x[2])
+
+    # Create a list of unique dates from the flight groups
+    unique_dates = sorted(list(set([group[0] for group in flight_groups])))
+
+    # Create a list of options for the selectbox
+    options = unique_dates
+
+    # Display the selectbox in the sidebar
+    st.sidebar.write("----------")
+    st.sidebar.markdown("<h1 style='text-align: center; color: black; font-size: 28px;'>---For Flgiht Analysis---</h1>", unsafe_allow_html=True)
+
+    selected_date = st.sidebar.selectbox('Date (For Flights stations per day(s))', options = options)
+
+    # Filter the flight groups by the selected date
+    filtered_groups = [
+        (group[1], count)
+        for group, count in groups.items()
+        if datetime.strptime(group[0], '%d%b').strftime('%d%b') == selected_date]
+        
+
+    # Display the filtered flight groups
+    with st.container():
+        st.write("-----------------------------")
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Flights stations per day(s):</h1>", unsafe_allow_html=True)
+        for count in sorted(filtered_groups):
+            st.write(count)
+    st.write(f"Date: {selected_date}")
+
     # Create a dictionary containing all flight information, keyed by date
     flight_info_by_date = {}
     for (date, ac_type), num_turnaround in sorted(num_turnarounds.items()):
@@ -308,17 +333,15 @@ if uploaded_file2 is not None:
         num_nonreg = num_nonregular[(date, ac_type)]
         if date not in flight_info_by_date:
             flight_info_by_date[date] = []
-        flight_info_by_date[date].append(f"{date} : {ac_type} : {num_turnaround} turnarounds, {num_layover} layovers, {num_nonreg} non-regular flights")
+        flight_info_by_date[date].append(f"Aircraft Type: {ac_type} : {num_turnaround} turnarounds, {num_layover} layovers, {num_nonreg} non-regular flights")
 
-    # Number of rows to display per page
-    rows_per_page = 10
+    # Number of rows to display per pages
+    rows_per_page2 = 10
 
     # Total number of pages
-    total_pages = len(flight_info_by_date) // rows_per_page + 1
+    total_pages2 = len(flight_info_by_date) // rows_per_page2 + 1
 
     # Current page date
-    st.sidebar.write("----------")
-    st.sidebar.markdown("<h1 style='text-align: center; color: black; font-size: 18px;'>--For Flgiht Analysis within a month--</h1>", unsafe_allow_html=True)
     current_page_date = st.sidebar.selectbox('Date (For Flight Types)', sorted(flight_info_by_date.keys()))
 
     # Calculate the data range for the current page
@@ -330,13 +353,14 @@ if uploaded_file2 is not None:
     total_nonreg = sum(num_nonregular.values())
 
     # Display the current page's content
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Date: Aircraft Type: TurnArounds : Layovers : and Non-Regular:</h1>", unsafe_allow_html=True)
+    st.write("-----------------------------")
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Date: Aircraft Type: TurnArounds : Layovers : and Non-Regular:</h1>", unsafe_allow_html=True)
     for item in page_flight_info:
         st.write(item)
 
     # Display pagination information
     st.write(f"Date: {current_page_date}")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Total Number of flights</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Total Number of flights in this month:</h1>", unsafe_allow_html=True)
     st.write(f"Turnaround: {total_turnaround}, Layover: {total_layover}, Non-Regular Flights: {total_nonreg}")
 
     # Create a list of crew information, sorted by date
@@ -359,6 +383,7 @@ if uploaded_file2 is not None:
     page_crew_info = crew_info[start_index:end_index]
 
     # Display the current page's content
+    st.write("-----------------------------")
     st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Crew Info:</h1>", unsafe_allow_html=True)
     for item in page_crew_info:
         st.write(item)
@@ -371,10 +396,10 @@ if uploaded_file2 is not None:
     end_index = start_index + rows_per_page
 
     # Display the total number of crew needed and aircraft type counts
-    if st.button("Show the estimated number"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Total Num of Crew Needed:</h1>", unsafe_allow_html=True)
+    if st.button("Show the estimated crew number"):
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Total Num of Crew Needed:</h1>", unsafe_allow_html=True)
         st.write(f"{total_crew_num}")
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
         st.write("\nType Series 320: ", len(ac_32))
         st.write("\nType Series 330: ", len(ac_33))
         
@@ -452,6 +477,8 @@ if uploaded_file2 is not None:
     filtered_data = df[(df['ArrStn'] == selected_station) | (df['DepStn'] == selected_station)]
 
     # Show the turnaround / layover flight for the selected stations
+    st.write("-----------------------------")
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Flight Types</h1>", unsafe_allow_html=True)
     if st.button("Show the turnaround / layover flight"):
         data = []
         for i in range(len(filtered_data)):
