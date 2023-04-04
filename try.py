@@ -93,28 +93,29 @@ if uploaded_file is not None:
             fig = px.bar(destination_counts, x=destination_counts.index, y=destination_counts.values, 
                          title="Common Destinations", labels={"x": "Destination", "y": "Count"})
             fig.update_traces(text=destination_counts.values, textposition='outside')
-            fig.update_layout(xaxis_title="Number of Flights", yaxis_title="Destination", xaxis_tickangle=-45, xaxis_tickfont_size=12, yaxis_tickfont_size=12, title_font_size=20)
+            fig.update_layout(xaxis_title="Destination Station", yaxis_title="Count", xaxis_tickangle=-45, xaxis_tickfont_size=12, yaxis_tickfont_size=12, title_font_size=20)
             st.plotly_chart(fig)
 
     # Get the most common departure and its count
             most_common_departure = departure_counts.index[0]
             most_common_count = departure_counts.iloc[0]
+            st.write("--------------------------")
             st.write(f"<h2 style='font-size:20px;'>Most common departure: <b><span style='font-size: 25px; color: blue; font-weight:bold;'>{most_common_departure}</span></b> ({most_common_count} flights)</h2>", unsafe_allow_html=True)        
         if not df_filtered.empty:
             destination_counts = df_filtered['Departure'].value_counts().sort_values(ascending=False)
             fig = px.bar(destination_counts, x=destination_counts.index, y=destination_counts.values, 
                          title="Common Departure", labels={"x": "Departure", "y": "Count"})
             fig.update_traces(text=departure_counts.values, textposition='outside')
-            fig.update_layout(xaxis_title="Number of Flights", yaxis_title="Departure", xaxis_tickangle=-45, xaxis_tickfont_size=12, yaxis_tickfont_size=12, title_font_size=20)
+            fig.update_layout(xaxis_title="Departure Station", yaxis_title="Count", xaxis_tickangle=-45, xaxis_tickfont_size=12, yaxis_tickfont_size=12, title_font_size=20)
             st.plotly_chart(fig)
         
         else:
             st.write("No records found matching the selected conditions")
 
     # Display pie chart of AcType counts
-    if st.button("Show commonly used Aircraft Types"):
+    if st.button("Commonly used Aircraft Types"):
         ac_type_counts = df_filtered['AcType'].value_counts()
-        fig = px.pie(ac_type_counts, values=ac_type_counts.values, names=ac_type_counts.index, title="Percentage of Aircraft Types")
+        fig = px.pie(ac_type_counts, values=ac_type_counts.values, names=ac_type_counts.index, title="Percentage of Commonly Used Aircraft Types")
         fig.update_traces(hoverinfo='label+percent', textinfo='value+percent', textfont_size=12, textposition='outside')
         fig.update_layout(title_font_size=20)
         st.plotly_chart(fig)
