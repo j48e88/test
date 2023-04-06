@@ -33,6 +33,7 @@ def read_data(file):
 
     df.insert(4, "Block_Diff_Round", diff_decimal)
     df['Block_Diff_Round'] = df['Block_Diff_Round'].fillna(0)
+    
     return df
 
 if uploaded_file is not None:
@@ -163,7 +164,6 @@ def preprocess_data(df):
     BlockOn = pd.to_datetime(df['STA'], format='%H:%M')
     BlockOn = BlockOn + pd.DateOffset(days=1)
     # Calculate report time
-# Calculate report time
     report = np.where(df['DepStn'] == "HKG",
                       np.where(df['STC'] == "J",
                                (BlockOff - pd.Timedelta(minutes=75)).dt.strftime('%H:%M').str.split().str[-1],
@@ -457,8 +457,12 @@ if uploaded_file2 is not None:
     checked = set()  # set to store checked flights
     valid_count = 0  # counter for valid flights
     invalid_count = 0
+    # create variables to store the total valid count and total invalid count
+    total_valid_count = 0
+    total_invalid_count = 0
     turn = []
     lay = []
+    grouped_data = df.groupby('Date')
 
     if reporting_time:
         time_ranges = []
@@ -494,65 +498,64 @@ if uploaded_file2 is not None:
     # Show the turnaround / layover flight for the selected stations
     st.write("-----------------------------")
     st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Flight Types in details</h1>", unsafe_allow_html=True)
-    if st.button("Show the turnaround / layover flight"):
-        data = []
-        for i in range(len(filtered_data)):
-            flight1 = filtered_data.iloc[i]
-            valid_connection = False
+    # create an empty list to store the data for each date
+    data_list = []
 
-            # check for valid connections
-            for j in range(i+1, len(df)):
-                flight2 = df.iloc[j]
-                if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
-                    flight1['Flight_No'] != flight2['Flight_No'] and
-                    all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_flights)):
-                    valid_connection = True
-                    sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
-                    connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
-                    valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
-                    valid_count += 1
-                    turn.append(flight2['Flight_No'])
-                    fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
-                    remaintime = round(fdp - sum_fdt ,2)
-                    data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
-                                round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
-                    st.write(f"\nFlights {flight1['Flight_No']} ({flight1['DepStn']} and {flight1['ArrStn']}) and {flight2['Flight_No']} ({flight2['DepStn']} and {flight2['ArrStn']}) is a turnaround flight. The est.FDT is {round(sum_fdt, 2)} hr. The FDP is {round(fdp, 2)} hr. The remaining time is {round(remaintime, 2)} hr.")
+    # add a selection box to the sidebar to filter the data by date
+    selected_date = st.sidebar.selectbox("Select a date", grouped_data.groups.keys())
 
-            # check for invalid connections
-            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
-                sum_fdt = round(flight1['diff decimal'], 2)
-                invalid_count += 1
-                lay.append(flight1['Flight_No'])
-                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
+    # filter the data by the selected date
+    filtered_data = grouped_data.get_group(selected_date)
+
+    # allow the user to show the valid connections by clicking a button
+    data = []
+    used_flights_on_date = set() # initialize set to track used flight numbers on the same day
+    for i in range(len(filtered_data)):
+        flight1 = filtered_data.iloc[i]
+        valid_connection = False
+
+        # check for valid connections
+        for j in range(i+1, len(df)):
+            flight2 = df.iloc[j]
+            if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
+                flight1['Flight_No'] != flight2['Flight_No'] and
+                flight1['Date'] == flight2['Date'] and
+                all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_flights) and
+                flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
+                valid_connection = True
+                sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
+                connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
+                valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
+                valid_count += 1
+                turn.append(flight2['Flight_No'])
+                fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
+                remaintime = round(fdp - sum_fdt ,2)
                 data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                            "", "", "",
-                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
-                st.write(f"\nFlight {flight1['Flight_No']} ({flight1['DepStn']} and {flight1['ArrStn']}) is a layover flight. The est.FDT is {round(sum_fdt, 2)} hr. The FDP is {round(fdp, 2)} hr.")
+                            flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
+                            round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
+                used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
+                used_flights_on_date.add(flight2['Flight_No'])
 
-        # Display the results in a table with rounded numbers
-        if data:
-            columns = ["Flight 1", "Dep Station 1", "Arr Station 1",
-                       "Flight 2", "Dep Station 2", "Arr Station 2",
-                       "Est. FDT (hr)", "FDP (hr)", "Remaining Time (hr)", "Flight Type"]
-            df = pd.DataFrame(data, columns=columns)
+        if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
+            sum_fdt = round(flight1['diff decimal'], 2)
+            invalid_count += 1
+            lay.append(flight1['Flight_No'])
+            fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
+            data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                        "", "", "",
+                        round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
 
-            # Apply formatting to the table
-            format_dict = {'Est. FDT (hr)': '{:.2f}', 'FDP (hr)': '{:.2f}', 'Remaining Time (hr)': '{:.2f}'}
-            formatted_df = df.style.format(format_dict)
+    if len(data) > 0:
+        # create a DataFrame from the data list
+        df_data = pd.DataFrame(data, columns=["Flight 1", "DepStn 1", "ArrStn 1", "Flight 2", "DepStn 2", "ArrStn 2", "Sum FDT", "FDP", "Remaining Time", "Type"])
+        # display the DataFrame as a table using st.write
+        st.write(df_data)
+        # add the data to the list for the current date
+        data_list.append(df_data)
+    else:
+        st.write("No valid connections found.")
 
-            # Display the formatted table
-            st.table(formatted_df)
-
-            # Export the table to a CSV file
-            csv = formatted_df.data.to_csv(index=False)
-            b64 = base64.b64encode(csv.encode()).decode()
-            href = f'<a href="data:file/csv;base64,{b64}" download="flight_data.csv">Download CSV File</a>'
-            st.markdown(href, unsafe_allow_html=True)
-
-
-        st.write(f"\n{valid_count} pairs of flight(s) is/are turnaround.")
-        st.write(f"{invalid_count} flight(s) is/are layover.")
-
-        total = valid_count + invalid_count
-        st.write(f"There are in total {total} flights within this month.")
+    # display the number of valid connections to the user
+    st.write(f"\n{valid_count} pairs of flight(s) is/are turnaround.")
+    st.write(f"{invalid_count} flight(s) is/are layover.")
+    st.write(f"Date: {selected_date}")
