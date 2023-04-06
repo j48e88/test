@@ -122,6 +122,7 @@ if uploaded_file is not None:
 
 import pandas as pd
 import streamlit as st
+import numpy as np
 from datetime import datetime, timedelta
 import base64
 
@@ -161,9 +162,22 @@ def preprocess_data(df):
     BlockOff = pd.to_datetime(df['STD'], format='%H:%M')
     BlockOn = pd.to_datetime(df['STA'], format='%H:%M')
     BlockOn = BlockOn + pd.DateOffset(days=1)
-    diff = BlockOn - BlockOff
-    diff_str = diff.astype(str)
-    diff_str = diff_str.apply(lambda x: x.split()[-1])
+    # Calculate report time
+# Calculate report time
+    report = np.where(df['DepStn'] == "HKG",
+                      np.where(df['STC'] == "J",
+                               (BlockOff - pd.Timedelta(minutes=75)).dt.strftime('%H:%M').str.split().str[-1],
+                               (BlockOff - pd.Timedelta(minutes=65)).dt.strftime('%H:%M').str.split().str[-1]),
+                      (BlockOff - pd.Timedelta(minutes=60)).dt.strftime('%H:%M').str.split().str[-1])
+
+    # Calculate postflight time
+    postflight = BlockOn + pd.DateOffset(minutes=30)
+    postflight = pd.to_datetime(postflight.dt.strftime('%Y-%m-%d %H:%M:%S'), format='%Y-%m-%d %H:%M:%S')
+    postflight_str = postflight.dt.strftime('%H:%M').str.split().str[-1]
+
+    # Calculate time difference between report and postflight
+    diff = postflight - pd.to_datetime(report, format='%H:%M')
+    diff_str = diff.astype(str).str.split().str[-1]
     df.insert(15, "Diff", diff_str)
 
     return df
