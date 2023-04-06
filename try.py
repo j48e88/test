@@ -33,7 +33,7 @@ def read_data(file):
 
     df.insert(4, "Block_Diff_Round", diff_decimal)
     df['Block_Diff_Round'] = df['Block_Diff_Round'].fillna(0)
-    
+
     return df
 
 if uploaded_file is not None:
@@ -502,7 +502,7 @@ if uploaded_file2 is not None:
     data_list = []
 
     # add a selection box to the sidebar to filter the data by date
-    selected_date = st.sidebar.selectbox("Select a date", grouped_data.groups.keys())
+    selected_date = st.sidebar.selectbox("Select a date (Flight Types in details)", grouped_data.groups.keys())
 
     # filter the data by the selected date
     filtered_data = grouped_data.get_group(selected_date)
