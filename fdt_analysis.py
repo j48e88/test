@@ -302,9 +302,9 @@ if uploaded_file2 is not None:
 
     # Display the total number of crew needed and aircraft type counts
     if st.button("Show the estimated crew number"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Total Num of Crew Needed:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated num of Crew Needed in the month:</h1>", unsafe_allow_html=True)
         st.write(f"{total_crew_num}")
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts in this month:</h1>", unsafe_allow_html=True)
         st.write("\nType Series 320: ", len(ac_32))
         st.write("\nType Series 330: ", len(ac_33))
         
