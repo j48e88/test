@@ -465,8 +465,8 @@ if uploaded_file2 is not None:
                     turn.append(flight2['Flight_No'])
                     fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
                     remaintime = round(fdp - sum_fdt ,2)
-                    data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
+                    data.append([flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
+                                flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
                                 round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
                     used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
                     used_flights_on_date.add(flight2['Flight_No'])
@@ -482,7 +482,7 @@ if uploaded_file2 is not None:
 
         if len(data) > 0:
             # create a DataFrame from the data list
-            df_data = pd.DataFrame(data, columns=["Flight 2", "DepStn 2", "ArrStn 2", "Flight 1", "DepStn 1", "ArrStn 1", "Sum FDT", "FDP", "Remaining Time", "Type"])
+            df_data = pd.DataFrame(data, columns=["Flight 1", "DepStn 1", "ArrStn 1", "Flight 2", "DepStn 2", "ArrStn 2", "Sum FDT", "FDP", "Remaining Time", "Type"])
             # display the DataFrame as a table using st.write
             st.write(df_data)
             # add the data to the list for the current date
