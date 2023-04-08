@@ -70,7 +70,7 @@ def preprocess_data(df):
 
 def parse_date(date_str):
     if isinstance(date_str, str):
-        return pd.datetime.strptime(date_str, '%d-%b')
+        return pd.datetime.strptime(date_str, '%d%b')
     else:
         return date_str
 
