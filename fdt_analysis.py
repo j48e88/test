@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 # Set page configuration
 st.set_page_config(page_title="Employee on Duty Record", page_icon=":bar_chart", layout="wide")
-st.title("Crew Data Analysis")
+
 
 st.title("Flight Data Analysis")
 # Add a file uploader to allow the user to upload an Excel file
