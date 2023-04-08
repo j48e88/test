@@ -68,7 +68,11 @@ def preprocess_data(df):
 
     return df
 
-
+def parse_date(date_str):
+    if isinstance(date_str, str):
+        return pd.datetime.strptime(date_str, '%d%b')
+    else:
+        return date_str
 
 if uploaded_file2 is not None:
     # Read the uploaded file and preprocess the data
