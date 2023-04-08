@@ -468,8 +468,8 @@ if uploaded_file2 is not None:
                     turn.append(flight2['Flight_No'])
                     fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
                     remaintime = round(fdp - sum_fdt ,2)
-                    data.append([flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
-                                flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                    data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
                                 round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
                     used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
                     used_flights_on_date.add(flight2['Flight_No'])
