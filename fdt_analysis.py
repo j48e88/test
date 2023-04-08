@@ -385,6 +385,7 @@ if uploaded_file2 is not None:
     checked = set()  # set to store checked flights
     valid_count = 0  # counter for valid flights
     invalid_count = 0
+    non_count = 0
     # create variables to store the total valid count and total invalid count
     total_valid_count = 0
     total_invalid_count = 0
@@ -471,7 +472,7 @@ if uploaded_file2 is not None:
                     used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
                     used_flights_on_date.add(flight2['Flight_No'])
 
-            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
+            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights and flight1['ArrStn'] != flight1['DepStn']) :
                 sum_fdt = round(flight1['diff decimal'], 2)
                 invalid_count += 1
                 lay.append(flight1['Flight_No'])
@@ -479,6 +480,15 @@ if uploaded_file2 is not None:
                 data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
                             "", "", "",
                             round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+            elif (flight1['ArrStn'] == flight1['DepStn']) :
+                sum_fdt = round(flight1['diff decimal'], 2)
+                non_count += 1
+                lay.append(flight1['Flight_No'])
+                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
+                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                            "", "", "",
+                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+                
 
         if len(data) > 0:
             # create a DataFrame from the data list
@@ -498,6 +508,6 @@ if uploaded_file2 is not None:
         st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{invalid_count}</b> flight(s) is/are layover.</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='font-family: Arial; font-size: 20px;'>There are in total <b><span style='color: red;'>{total_count_month}</b> flights in this month.</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='font-size: 20px;'>You have selected date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
-
+        st.write(f"{non_count}")
     else:
         content_placeholder.empty()  # Hide the content
