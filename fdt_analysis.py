@@ -471,7 +471,7 @@ if uploaded_file2 is not None:
                     used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
                     used_flights_on_date.add(flight2['Flight_No'])
 
-            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights and flight1['ArrStn'] != flight1['DepStn']) :
+            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights) :
                 sum_fdt = round(flight1['diff decimal'], 2)
                 invalid_count += 1
                 lay.append(flight1['Flight_No'])
