@@ -207,15 +207,26 @@ if uploaded_file2 is not None:
         (group[1], count)
         for group, count in groups.items()
         if datetime.strptime(group[0], '%d%b').strftime('%d%b') == selected_date]
-        
+    
+
+
+
 
     # Display the filtered flight groups
     with st.container():
         st.write("-----------------------------")
         st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>The daliy flight stations are shown:</h1>", unsafe_allow_html=True)
-        for count in sorted(filtered_groups):
-            st.write(count)
-    st.markdown(f"<p style='font-size: 20px;'>Date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
+        # Create a placeholder for the content
+        content_placeholder = st.empty()
+        # Add a button to show or hide the content
+        show_content = st.checkbox("Show the flight stations per day")
+            # Update the content based on the checkbox value
+        if show_content:
+            for count in sorted(filtered_groups):
+                st.write(count)
+        else:
+            content_placeholder.empty()  # Hide the content
+    st.markdown(f"<p style='font-size: 20px;'>On date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
 
     # Create a dictionary containing all flight information, keyed by date
     flight_info_by_date = {}
@@ -224,8 +235,7 @@ if uploaded_file2 is not None:
         num_nonreg = num_nonregular[(date, ac_type)]
         if date not in flight_info_by_date:
             flight_info_by_date[date] = []
-        flight_info_by_date[date].append(f"Aircraft Type: {ac_type} : {num_turnaround} turnarounds, {num_layover} layovers, {num_nonreg} non-regular flights")
-
+        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
 
     # Number of rows to display per pages
     rows_per_page2 = 10
@@ -252,9 +262,21 @@ if uploaded_file2 is not None:
 
 
     # Display pagination information
-    st.write(f"Date: {current_page_date}")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Total Number of flights in this month:</h1>", unsafe_allow_html=True)
-    st.write(f"Turnaround: {total_turnaround}, Layover: {total_layover}, Non-Regular Flights: {total_nonreg}")
+    st.markdown(f"<p style='font-size: 18px;'> On date: <b><span style='color: blue;'>{current_page_date}</b>.</p>", unsafe_allow_html=True)
+
+    # Create a placeholder for the content
+    content_placeholder = st.empty()
+
+    # Add a button to show or hide the content
+    show_content = st.checkbox("Show the total Number of flights in this month:")
+
+    # Update the content based on the checkbox value
+    if show_content:
+        st.markdown(f"<p style='font-size: 20px;'>Turnaround flights: <b><span style='color: red;'>{total_turnaround}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'>Layover flights: <b><span style='color: red;'>{total_layover}</b></p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'>Non-Regular Flights: <b><span style='color: red;'>{total_nonreg}</b></p>", unsafe_allow_html=True)
+    else:
+        content_placeholder.empty()  # Hide the content
 
 
     # Create a list of crew information, sorted by date
@@ -267,8 +289,8 @@ if uploaded_file2 is not None:
         crew_num = int(info.split(" = ")[1])
         data.append({'date': date, 'Required Crew': crew_num})
 
-    d = pd.DataFrame(data)
-    d = d.set_index('date')
+    df_data = pd.DataFrame(data)
+    df_data = df_data.set_index('date')
 
     # Number of rows to display per page
     rows_per_page = 5
@@ -277,24 +299,33 @@ if uploaded_file2 is not None:
     total_pages = len(crew_info) // rows_per_page + 1
 
     # Current page index
-    current_page_index = st.sidebar.number_input("Page  (For Crew Info)", min_value=1, max_value=total_pages, value=1, step=1) - 1
+    current_page_index = st.sidebar.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
 
     # Calculate the data range for the current page
     start_index = current_page_index * rows_per_page
     end_index = start_index + rows_per_page
     page_crew_info = crew_info[start_index:end_index]
-    page_data = d.iloc[start_index:end_index].copy()
+    page_data = df_data.iloc[start_index:end_index].copy()
     # Reset the index and rename the "Required Crew" column
     page_data = page_data.reset_index()
     page_data = page_data.rename(columns={"crew_num": "Required Crew"})
     # Display the current page's content
     st.write("-----------------------------")
     st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", unsafe_allow_html=True)
-    st.dataframe(pd.DataFrame(page_data), height=210)  
+    # Create a placeholder for the content
+    content_placeholder = st.empty()
 
+    # Add a button to show or hide the content
+    show_content = st.checkbox("Show the required crew according to the date")
+
+    # Update the content based on the checkbox value
+    if show_content:
+        st.dataframe(pd.DataFrame(page_data), height=210)  
 
     # Display pagination information
-    st.write(f"Page {current_page_index+1} of {total_pages}")
+        st.write(f"Page {current_page_index+1} of {total_pages}")
+    else:
+        content_placeholder.empty()  # Hide the content
 
     # Update start and end indices based on the current page index
     start_index = current_page_index * rows_per_page
@@ -302,9 +333,9 @@ if uploaded_file2 is not None:
 
     # Display the total number of crew needed and aircraft type counts
     if st.button("Show the estimated crew number"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated num of Crew Needed in the month:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Total Num of Crew Needed:</h1>", unsafe_allow_html=True)
         st.write(f"{total_crew_num}")
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts in this month:</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
         st.write("\nType Series 320: ", len(ac_32))
         st.write("\nType Series 330: ", len(ac_33))
         
@@ -379,8 +410,12 @@ if uploaded_file2 is not None:
     # Get the list of unique ArrStn and DepStn for populating the selectbox
     stations = df[['ArrStn', 'DepStn']].stack().unique()
 
+    # add a selection box to the sidebar to filter the data by date
+    selected_date = st.sidebar.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
+
     # Add a selectbox on the sidebar for selecting the station
     selected_station = st.sidebar.selectbox('Select Station (HKG will show all the flight pairs)', stations)
+
 
     # Filter the data for the selected station
     filtered_data = df[(df['ArrStn'] == selected_station) | (df['DepStn'] == selected_station)]
@@ -390,67 +425,72 @@ if uploaded_file2 is not None:
     st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Here are the details regarding the flight types:</h1>", unsafe_allow_html=True)
     # create an empty list to store the data for each date
     data_list = []
+    # Create a placeholder for the content
+    content_placeholder = st.empty()
+    # Add a button to show or hide the content
+    show_content = st.checkbox("Show the results")
+    # Update the content based on the checkbox value
+    if show_content:
 
-    # add a selection box to the sidebar to filter the data by date
-    selected_date = st.sidebar.selectbox("Select a date (Flight Types in details)", grouped_data.groups.keys())
+        # filter the data by the selected date
+        filtered_data = grouped_data.get_group(selected_date)
 
-    # filter the data by the selected date
-    filtered_data = grouped_data.get_group(selected_date)
+        # allow the user to show the valid connections by clicking a button
+        data = []
+        used_flights_on_date = set() # initialize set to track used flight numbers on the same day
+        for i in range(len(filtered_data)):
+            flight1 = filtered_data.iloc[i]
+            valid_connection = False
 
-    # allow the user to show the valid connections by clicking a button
-    data = []
-    used_flights_on_date = set() # initialize set to track used flight numbers on the same day
-    for i in range(len(filtered_data)):
-        flight1 = filtered_data.iloc[i]
-        valid_connection = False
+            # check for valid connections
+            for j in range(i+1, len(df)):
+                flight2 = df.iloc[j]
+                if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
+                    flight1['Flight_No'] != flight2['Flight_No'] and
+                    flight1['Date'] == flight2['Date'] and
+                    all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_flights) and
+                    flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
+                    valid_connection = True
+                    sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
+                    connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
+                    valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
+                    valid_count += 1
+                    turn.append(flight2['Flight_No'])
+                    fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
+                    remaintime = round(fdp - sum_fdt ,2)
+                    data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
+                                round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
+                    used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
+                    used_flights_on_date.add(flight2['Flight_No'])
 
-        # check for valid connections
-        for j in range(i+1, len(df)):
-            flight2 = df.iloc[j]
-            if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
-                flight1['Flight_No'] != flight2['Flight_No'] and
-                flight1['Date'] == flight2['Date'] and
-                all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_flights) and
-                flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
-                valid_connection = True
-                sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
-                connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
-                valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
-                valid_count += 1
-                turn.append(flight2['Flight_No'])
-                fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
-                remaintime = round(fdp - sum_fdt ,2)
+            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
+                sum_fdt = round(flight1['diff decimal'], 2)
+                invalid_count += 1
+                lay.append(flight1['Flight_No'])
+                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
                 data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                            flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
-                            round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
-                used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
-                used_flights_on_date.add(flight2['Flight_No'])
+                            "", "", "",
+                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
 
-        if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
-            sum_fdt = round(flight1['diff decimal'], 2)
-            invalid_count += 1
-            lay.append(flight1['Flight_No'])
-            fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
-            data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                        "", "", "",
-                        round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+        if len(data) > 0:
+            # create a DataFrame from the data list
+            df_data = pd.DataFrame(data, columns=["Flight 1", "DepStn 1", "ArrStn 1", "Flight 2", "DepStn 2", "ArrStn 2", "Sum FDT", "FDP", "Remaining Time", "Type"])
+            # display the DataFrame as a table using st.write
+            st.write(df_data)
+            # add the data to the list for the current date
+            data_list.append(df_data)
+        else:
+            st.write("No valid connections found.")
 
-    if len(data) > 0:
-        # create a DataFrame from the data list
-        df_data = pd.DataFrame(data, columns=["Flight 1", "DepStn 1", "ArrStn 1", "Flight 2", "DepStn 2", "ArrStn 2", "Sum FDT", "FDP", "Remaining Time", "Type"])
-        # display the DataFrame as a table using st.write
-        st.write(df_data)
-        # add the data to the list for the current date
-        data_list.append(df_data)
+        # display the number of valid connections to the user
+        total_count_day = len(filtered_data)
+        total_count_month = len(df)
+        st.markdown(f"<p style='font-size: 20px;'>There are in total <b><span style='color: red;'>{total_count_day}</b> flights on <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{valid_count}</b> pairs of flight(s) is/are turnaround.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{invalid_count}</b> flight(s) is/are layover.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-family: Arial; font-size: 20px;'>There are in total <b><span style='color: red;'>{total_count_month}</b> flights in this month.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'>You have selected date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
+
     else:
-        st.write("No valid connections found.")
-
-    # display the number of valid connections to the user
-    total_count_day = len(filtered_data)
-    total_count_month = len(df)
-    st.markdown(f"<p style='font-family: Arial; font-size: 20px;'>There are in total <b><span style='color: red;'>{total_count_month}</b> flights in this month.</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{valid_count}</b> pairs of flight(s) is/are turnaround.</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{invalid_count}</b> flight(s) is/are layover.</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 20px;'>There are in total <b><span style='color: red;'>{total_count_day}</b> flights on <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 20px;'>Date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
-
+        content_placeholder.empty()  # Hide the content
