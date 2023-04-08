@@ -499,7 +499,6 @@ if uploaded_file2 is not None:
         st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{valid_count}</b> pairs of flight(s) is/are turnaround.</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='font-size: 20px;'><b><span style='color: red;'>{invalid_count}</b> flight(s) is/are layover.</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='font-family: Arial; font-size: 20px;'>There are in total <b><span style='color: red;'>{total_count_month}</b> flights in this month.</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size: 20px;'>You have selected date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
-
     else:
         content_placeholder.empty()  # Hide the content
+    st.markdown(f"<p style='font-size: 20px;'>You have selected date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
