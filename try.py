@@ -125,7 +125,14 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 from datetime import datetime, timedelta
-import base64
+
+st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>This app is used for crew estimation.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>The crew is calculated according to the aircraft types :</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>For passenger flights, <b><span style='color: blue;'>A320</b> will need <b><span style='color: red;'>9</b> crews ; <b><span style='color: blue;'> A330</b> will need <b><span style='color: red;'>11</b> crews </p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>For cargo flights, both will need <b><span style='color: red;'>4</b> crews.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>Turnaround =<b><span style='color: red;'>1</b> crew team perform <b><span style='color: red;'>2</b> flights.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>Layover =<b><span style='color: red;'>1</b> crew team perform <b><span style='color: red;'>1</b> flight.</p>", unsafe_allow_html=True)
+
 
 st.title("Flight Data Analysis")
 # Add a file uploader to allow the user to upload an Excel file
