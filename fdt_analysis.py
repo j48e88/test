@@ -480,14 +480,7 @@ if uploaded_file2 is not None:
                 data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
                             "", "", "",
                             round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
-            elif (flight1['ArrStn'] == flight1['DepStn']) :
-                sum_fdt = round(flight1['diff decimal'], 2)
-                non_count += 1
-                lay.append(flight1['Flight_No'])
-                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
-                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                            "", "", "",
-                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+
                 
 
         if len(data) > 0:
