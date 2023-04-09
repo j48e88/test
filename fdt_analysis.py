@@ -406,14 +406,10 @@ if uploaded_file is not None:
     st.write('\n')
     # Get the list of unique ArrStn and DepStn for populating the selectbox
     stations = df[['ArrStn', 'DepStn']].stack().unique()
-
     # add a selection box to the sidebar to filter the data by date
     selected_date = st.sidebar.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
-
     # Add a selectbox on the sidebar for selecting the station
     selected_station = st.sidebar.selectbox('Select Station (HKG will show all the flight pairs)', stations)
-
-
     # Filter the data for the selected station
     filtered_data = df[(df['ArrStn'] == selected_station) | (df['DepStn'] == selected_station)]
 
@@ -426,13 +422,11 @@ if uploaded_file is not None:
     content_placeholder = st.empty()
     # Add a button to show or hide the content
     show_content = st.checkbox("Show the results")
+    
     # Update the content based on the checkbox value
     if show_content:
-
         # filter the data by the selected date
-        filtered_data = grouped_data.get_group(selected_date)
-
-        # allow the user to show the valid connections by clicking a button
+        filtered_data = grouped_data.get_group(selected_station,selected_date)
         data = []
         used_flights_on_date = set() # initialize set to track used flight numbers on the same day
         for i in range(len(filtered_data)):
