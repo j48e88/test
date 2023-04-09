@@ -15,7 +15,7 @@ st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>Layov
 
 st.title("Flight Data Analysis")
 # Add a file uploader to allow the user to upload an Excel file
-uploaded_file2 = st.file_uploader("Upload the Flight Schedule file", type=["xlsx", "csv"])
+uploaded_file = st.file_uploader("Upload the Flight Schedule file", type=["xlsx", "csv"])
 
 
 # Define a function to preprocess the data
@@ -74,9 +74,9 @@ def parse_date(date_str):
     else:
         return date_str
 
-if uploaded_file2 is not None:
+if uploaded_file is not None:
     # Read the uploaded file and preprocess the data
-    df = pd.read_excel(uploaded_file2, skiprows=3, parse_dates=['Date'], date_parser=parse_date)
+    df = pd.read_excel(uploaded_file, skiprows=3, parse_dates=['Date'], date_parser=parse_date)
     df = df.dropna()
     if 'ac_type' in df.columns:
         df['ac_type'] = df['ac_type'].astype(str).tolist()
