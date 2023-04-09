@@ -443,7 +443,7 @@ if uploaded_file is not None:
 
                     valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
                     valid_count += 1
-                    turn.append(flight2['Flight_No'])
+
                     fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
                     remaintime = round(fdp - sum_fdt ,2)
                     data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
