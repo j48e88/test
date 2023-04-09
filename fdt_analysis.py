@@ -14,7 +14,7 @@ st.markdown("<h1 style='text-align: center; color: grey; font-size: 20px;'>Layov
 
 
 st.title("Flight Data Analysis")
-# Add a file uploader to allow the user to upload an Excel file
+# Add a file uploader to allow the user to upload an Excel /CSV file
 uploaded_file = st.file_uploader("Upload the Flight Schedule file", type=["xlsx", "csv"])
 
 
