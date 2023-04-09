@@ -408,10 +408,7 @@ if uploaded_file is not None:
     stations = df[['ArrStn', 'DepStn']].stack().unique()
     # add a selection box to the sidebar to filter the data by date
     selected_date = st.sidebar.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
-    # Add a selectbox on the sidebar for selecting the station
-    selected_station = st.sidebar.selectbox('Select Station (HKG will show all the flight pairs)', stations)
-    # Filter the data for the selected station
-    filtered_data = df[(df['ArrStn'] == selected_station) | (df['DepStn'] == selected_station)]
+
 
     # Show the turnaround / layover flight for the selected stations
     st.write("-----------------------------")
@@ -426,7 +423,7 @@ if uploaded_file is not None:
     # Update the content based on the checkbox value
     if show_content:
         # filter the data by the selected date
-        filtered_data = grouped_data.get_group(selected_station,selected_date)
+        filtered_data = grouped_data.get_group(selected_date)
         data = []
         used_flights_on_date = set() # initialize set to track used flight numbers on the same day
         for i in range(len(filtered_data)):
