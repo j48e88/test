@@ -217,10 +217,6 @@ if uploaded_file is not None:
         for group, count in groups.items()
         if datetime.strptime(group[0], '%d%b').strftime('%d%b') == selected_date]
     
-
-
-
-
     # Display the filtered flight groups
     with st.container():
         st.write("-----------------------------")
@@ -246,12 +242,6 @@ if uploaded_file is not None:
             flight_info_by_date[date] = []
         flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
 
-    # Number of rows to display per pages
-    rows_per_page2 = 10
-
-    # Total number of pages
-    total_pages2 = len(flight_info_by_date) // rows_per_page2 + 1
-
     # Current page date
     current_page_date = st.sidebar.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
 
@@ -268,7 +258,6 @@ if uploaded_file is not None:
     st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Types of Flights</h1>", unsafe_allow_html=True)
     for item in page_flight_info:
         st.write(item)
-
 
     # Display pagination information
     st.markdown(f"<p style='font-size: 18px;'> On date: <b><span style='color: blue;'>{current_page_date}</b>.</p>", unsafe_allow_html=True)
