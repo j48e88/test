@@ -240,7 +240,8 @@ if uploaded_file is not None:
         num_nonreg = num_nonregular[(date, ac_type)]
         if date not in flight_info_by_date:
             flight_info_by_date[date] = []
-        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
+        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, 
+                                         **{num_nonreg}** non-regular flights")        
 
     # Current page date
     current_page_date = st.sidebar.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
@@ -291,11 +292,9 @@ if uploaded_file is not None:
     df_data = df_data.set_index('date')
 
     # Number of rows to display per page
-    rows_per_page = 5
-
+    rows_per_page = 7
     # Total number of pages
     total_pages = len(crew_info) // rows_per_page + 1
-
     # Current page index
     current_page_index = st.sidebar.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
 
@@ -309,7 +308,8 @@ if uploaded_file is not None:
     page_data = page_data.rename(columns={"crew_num": "Required Crew"})
     # Display the current page's content
     st.write("-----------------------------")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", 
+                unsafe_allow_html=True)
     # Create a placeholder for the content
     content_placeholder = st.empty()
 
@@ -318,7 +318,7 @@ if uploaded_file is not None:
 
     # Update the content based on the checkbox value
     if show_content:
-        st.dataframe(pd.DataFrame(page_data), height=210)  
+        st.dataframe(pd.DataFrame(page_data), height=300)  
 
     # Display pagination information
         st.write(f"Page {current_page_index+1} of {total_pages}")
