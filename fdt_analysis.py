@@ -440,10 +440,10 @@ if uploaded_file is not None:
                     flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
                     valid_connection = True
                     sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
-
+                    connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
                     valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
                     valid_count += 1
-
+                    turn.append(flight2['Flight_No'])
                     fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
                     remaintime = round(fdp - sum_fdt ,2)
                     data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
@@ -454,7 +454,7 @@ if uploaded_file is not None:
 
             if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
                 sum_fdt = round(flight1['diff decimal'], 2)
-                invalid_count += 1
+                invalid_count += 1          
                 lay.append(flight1['Flight_No'])
                 fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
                 data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
