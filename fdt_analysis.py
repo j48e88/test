@@ -440,7 +440,7 @@ if uploaded_file is not None:
                     flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
                     valid_connection = True
                     sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
-                    connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
+
                     valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
                     valid_count += 1
                     turn.append(flight2['Flight_No'])
