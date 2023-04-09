@@ -317,7 +317,7 @@ if uploaded_file is not None:
 
     # Update the content based on the checkbox value
     if show_content:
-        st.dataframe(pd.DataFrame(page_data), height=350)  
+        st.dataframe(pd.DataFrame(page_data), height=280)  
 
     # Display pagination information
         st.write(f"Page {current_page_index+1} of {total_pages}")
