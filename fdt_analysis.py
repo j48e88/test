@@ -289,7 +289,7 @@ if uploaded_file is not None:
     for date, crew_num in sorted(daily_crew_nums.items()):
         avg_crew = avg_crew_per_day
         diff = avg_crew - crew_num
-        data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
+        data.append({'date': pd.to_datetime(date), 'Required Crew': crew_num, 'Crew Difference': diff})
     
     # Create a line chart
     chart = alt.Chart(df).mark_line().encode(
