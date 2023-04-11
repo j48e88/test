@@ -183,6 +183,12 @@ if uploaded_file is not None:
         elif row['STC'] != 'J':
             num_crew = 4
 
+    # count the number of unique dates in the DataFrame
+    num_dates = len(df['Date'].unique())
+
+    # calculate the average crew number per day
+    avg_crew_per_day = round(total_crew_num / num_dates)
+
     # Calculate number of crew on each day
     daily_crew_nums = {}
     for (date, ac_type), num_turnaround in num_turnarounds.items():
@@ -278,14 +284,11 @@ if uploaded_file is not None:
 
 
     # Create a list of crew information, sorted by date
-    crew_info = []
-    for date, crew_num in sorted(daily_crew_nums.items()):
-        crew_info.append(f"{date} : Required Crew = {crew_num}")
     data = []
-    for info in crew_info:
-        date = info.split(" : ")[0]
-        crew_num = int(info.split(" = ")[1])
-        data.append({'date': date, 'Required Crew': crew_num})
+    for date, crew_num in sorted(daily_crew_nums.items()):
+        avg_crew = avg_crew_per_day
+        diff = avg_crew - crew_num
+        data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
 
     df_data = pd.DataFrame(data)
     df_data = df_data.set_index('date')
@@ -293,14 +296,14 @@ if uploaded_file is not None:
     # Number of rows to display per page
     rows_per_page = 7
     # Total number of pages
-    total_pages = len(crew_info) // rows_per_page + 1
+    total_pages = len(data) // rows_per_page + 1
     # Current page index
     current_page_index = st.sidebar.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
 
     # Calculate the data range for the current page
     start_index = current_page_index * rows_per_page
     end_index = start_index + rows_per_page
-    page_crew_info = crew_info[start_index:end_index]
+    page_crew_info = data[start_index:end_index]
     page_data = df_data.iloc[start_index:end_index].copy()
     # Reset the index and rename the "Required Crew" column
     page_data = page_data.reset_index()
@@ -328,10 +331,10 @@ if uploaded_file is not None:
     start_index = current_page_index * rows_per_page
     end_index = start_index + rows_per_page
 
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated average number of crews needed per day:</h1>", unsafe_allow_html=True)
+    st.write(f"{avg_crew_per_day}")
     # Display the total number of crew needed and aircraft type counts
     if st.button("Show the estimated crew number"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Total Num of Crew Needed:</h1>", unsafe_allow_html=True)
-        st.write(f"{total_crew_num}")
         st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
         st.write("\nType Series 320: ", len(ac_32))
         st.write("\nType Series 330: ", len(ac_33))
