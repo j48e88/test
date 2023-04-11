@@ -289,7 +289,15 @@ if uploaded_file is not None:
         avg_crew = avg_crew_per_day
         diff = avg_crew - crew_num
         data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
+    # Create a line chart
+    chart = alt.Chart(df).mark_line().encode(
+        x='date:T',
+        y='Crew Difference:Q'
+    )
 
+    # Display the chart in Streamlit
+    st.altair_chart(chart, use_container_width=True)
+    
     # find the date and required crew number with the maximum/minimum crew number
     max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
     min_crew_num = min(data, key=lambda x: x['Required Crew'])['Required Crew']
