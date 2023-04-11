@@ -290,10 +290,11 @@ if uploaded_file is not None:
         avg_crew = avg_crew_per_day
         diff = avg_crew - crew_num
         data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
+    
     # Create a line chart
     chart = alt.Chart(df).mark_line().encode(
-        x='Crew Difference:Q',
-        y='date:T'
+        x='date:T',
+        y='Crew Difference:Q'
     )
 
 
@@ -351,7 +352,7 @@ if uploaded_file is not None:
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
             st.write(crew_table)
-                # Display the chart in Streamlit
+            # Display the chart in Streamlit
             st.altair_chart(chart, use_container_width=True)
         else:
             content_placeholder2.empty()
