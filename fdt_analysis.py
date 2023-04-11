@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 from datetime import datetime, timedelta
+import plotly.express as px
 # Set page configuration
 st.set_page_config(page_title="Crew Estimation", page_icon=":bar_chart", layout="wide")
 
@@ -289,7 +290,8 @@ if uploaded_file is not None:
         avg_crew = avg_crew_per_day
         diff = avg_crew - crew_num
         data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
-    
+    # Create a line chart using plotly
+    fig = px.line(df, x='date', y='Crew Difference')
     # find the date and required crew number with the maximum/minimum crew number
     max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
     min_crew_num = min(data, key=lambda x: x['Required Crew'])['Required Crew']
@@ -339,8 +341,7 @@ if uploaded_file is not None:
     # Update the content based on the checkbox value
     if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
-        # Create a line chart using st.line_chart()
-        st.line_chart(df[['date', 'Crew Difference']])
+        st.plotly_chart(fig)
         show_content2 = st.checkbox("Show the minimum or maximum number")  
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
