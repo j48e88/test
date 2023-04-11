@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 from datetime import datetime, timedelta
-import altair as alt
 # Set page configuration
 st.set_page_config(page_title="Crew Estimation", page_icon=":bar_chart", layout="wide")
 
@@ -289,15 +288,7 @@ if uploaded_file is not None:
     for date, crew_num in sorted(daily_crew_nums.items()):
         avg_crew = avg_crew_per_day
         diff = avg_crew - crew_num
-        data.append({'date': pd.to_datetime(date), 'Required Crew': crew_num, 'Crew Difference': diff})
-    
-    # Create a line chart
-    chart = alt.Chart(df).mark_line().encode(
-        x='date:T',
-        y='Crew Difference:Q'
-    )
-
-
+        data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
     
     # find the date and required crew number with the maximum/minimum crew number
     max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
@@ -348,13 +339,10 @@ if uploaded_file is not None:
     # Update the content based on the checkbox value
     if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
-        st.altair_chart(chart, use_container_width=True)
         show_content2 = st.checkbox("Show the minimum or maximum number")  
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
             st.write(crew_table)
-            # Display the chart in Streamlit
-            
         else:
             content_placeholder2.empty()
         # Display pagination information
