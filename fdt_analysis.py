@@ -292,12 +292,11 @@ if uploaded_file is not None:
         data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
     # Create a line chart
     chart = alt.Chart(df).mark_line().encode(
-        x='date:T',
-        y='Crew Difference:Q'
+        x='Crew Difference:Q',
+        y='date:T'
     )
 
-    # Display the chart in Streamlit
-    st.altair_chart(chart, use_container_width=True)
+
     
     # find the date and required crew number with the maximum/minimum crew number
     max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
@@ -352,6 +351,8 @@ if uploaded_file is not None:
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
             st.write(crew_table)
+                # Display the chart in Streamlit
+            st.altair_chart(chart, use_container_width=True)
         else:
             content_placeholder2.empty()
         # Display pagination information
