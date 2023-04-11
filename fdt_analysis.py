@@ -298,8 +298,8 @@ if uploaded_file is not None:
 
     # create a new DataFrame with the minimum and maximum crew numbers and the corresponding dates
     crew_table = pd.DataFrame({'Date': max_crew_dates + min_crew_dates,
-                               'Least crew demand': [min_crew_num if date in min_crew_dates else None for date in max_crew_dates + min_crew_dates],
-                               'Highest crew demand': [max_crew_num if date in max_crew_dates else None for date in max_crew_dates + min_crew_dates]})
+                               'Least crew demand': [min_crew_num if date in min_crew_dates else '/' for date in max_crew_dates + min_crew_dates],
+                               'Highest crew demand': [max_crew_num if date in max_crew_dates else '/' for date in max_crew_dates + min_crew_dates]})
 
 
     # calculate the crew differences and add new columns to the crew_table DataFrame
