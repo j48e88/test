@@ -339,6 +339,8 @@ if uploaded_file is not None:
     # Update the content based on the checkbox value
     if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
+        # Create a line chart using st.line_chart()
+        st.line_chart(df[['date', 'Crew Difference']])
         show_content2 = st.checkbox("Show the minimum or maximum number")  
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
