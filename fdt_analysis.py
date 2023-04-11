@@ -290,6 +290,22 @@ if uploaded_file is not None:
         diff = avg_crew - crew_num
         data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
 
+    # find the date and required crew number with the maximum/minimum crew number
+    max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
+    min_crew_num = min(data, key=lambda x: x['Required Crew'])['Required Crew']
+    max_crew_dates = [info['date'] for info in data if info['Required Crew'] == max_crew_num]
+    min_crew_dates = [info['date'] for info in data if info['Required Crew'] == min_crew_num]
+
+    # create a new DataFrame with the minimum and maximum crew numbers and the corresponding dates
+    crew_table = pd.DataFrame({'Date': max_crew_dates + min_crew_dates,
+                               'Minimum Required Crew': [min_crew_num if date in min_crew_dates else None for date in max_crew_dates + min_crew_dates],
+                               'Maximum Required Crew': [max_crew_num if date in max_crew_dates else None for date in max_crew_dates + min_crew_dates]})
+
+
+    # calculate the crew differences and add new columns to the crew_table DataFrame
+    crew_table['Over manpower'] = avg_crew_per_day - crew_table['Minimum Required Crew']
+    crew_table['Lack manpower'] = avg_crew_per_day - crew_table['Maximum Required Crew']
+
     df_data = pd.DataFrame(data)
     df_data = df_data.set_index('date')
 
@@ -320,10 +336,13 @@ if uploaded_file is not None:
 
     # Update the content based on the checkbox value
     if show_content:
-        st.dataframe(pd.DataFrame(page_data), height=280)  
+        st.dataframe(pd.DataFrame(page_data), height=280)
 
     # Display pagination information
         st.write(f"Page {current_page_index+1} of {total_pages}")
+            
+        # print the crew information and the date and required crew number with the maximum crew number
+        st.write(crew_table)
     else:
         content_placeholder.empty()  # Hide the content
 
@@ -333,6 +352,7 @@ if uploaded_file is not None:
 
     st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated average number of crews needed per day:</h1>", unsafe_allow_html=True)
     st.write(f"{avg_crew_per_day}")
+    st.write(f"")
     # Display the total number of crew needed and aircraft type counts
     if st.button("Show the estimated crew number"):
         st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
