@@ -348,12 +348,13 @@ if uploaded_file is not None:
     # Update the content based on the checkbox value
     if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
+        st.altair_chart(chart, use_container_width=True)
         show_content2 = st.checkbox("Show the minimum or maximum number")  
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
             st.write(crew_table)
             # Display the chart in Streamlit
-            st.altair_chart(chart, use_container_width=True)
+            
         else:
             content_placeholder2.empty()
         # Display pagination information
