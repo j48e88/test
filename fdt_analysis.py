@@ -334,7 +334,6 @@ if uploaded_file is not None:
     # Add a button to show or hide the content
     show_content1 = st.checkbox("Show the required crew according to the date")
 
-
     # Update the content based on the checkbox value
     if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
