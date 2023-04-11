@@ -329,22 +329,27 @@ if uploaded_file is not None:
     st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", 
                 unsafe_allow_html=True)
     # Create a placeholder for the content
-    content_placeholder = st.empty()
+    content_placeholder1= st.empty()
+    content_placeholder2 = st.empty()
 
     # Add a button to show or hide the content
-    show_content = st.checkbox("Show the required crew according to the date")
+    show_content1 = st.checkbox("Show the required crew according to the date")
+
 
     # Update the content based on the checkbox value
-    if show_content:
+    if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
-
-    # Display pagination information
+        show_content2 = st.checkbox("Show the minimum or maximum number")  
+        if show_content2:
+            # print the crew information and the date and required crew number with the maximum crew number
+            st.write(crew_table)
+        else:
+            content_placeholder2.empty()
+        # Display pagination information
         st.write(f"Page {current_page_index+1} of {total_pages}")
-            
-        # print the crew information and the date and required crew number with the maximum crew number
-        st.write(crew_table)
+
     else:
-        content_placeholder.empty()  # Hide the content
+        content_placeholder1.empty()  # Hide the content
 
     # Update start and end indices based on the current page index
     start_index = current_page_index * rows_per_page
@@ -354,7 +359,7 @@ if uploaded_file is not None:
     st.write(f"{avg_crew_per_day}")
     st.write(f"")
     # Display the total number of crew needed and aircraft type counts
-    if st.button("Show the estimated crew number"):
+    if st.button("Show the Aircraft Types Counts"):
         st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
         st.write("\nType Series 320: ", len(ac_32))
         st.write("\nType Series 330: ", len(ac_33))
