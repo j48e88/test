@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 from datetime import datetime, timedelta
+import altair as alt
 # Set page configuration
 st.set_page_config(page_title="Crew Estimation", page_icon=":bar_chart", layout="wide")
 
