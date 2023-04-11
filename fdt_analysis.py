@@ -303,8 +303,8 @@ if uploaded_file is not None:
 
 
     # calculate the crew differences and add new columns to the crew_table DataFrame
-    crew_table['Over manpower'] = avg_crew_per_day - crew_table['Minimum Required Crew']
-    crew_table['Lack manpower'] = avg_crew_per_day - crew_table['Maximum Required Crew']
+    crew_table['Over manpower'] = avg_crew_per_day - crew_table['Least crew demand']
+    crew_table['Lack manpower'] = avg_crew_per_day - crew_table['Highest crew demand']
 
     df_data = pd.DataFrame(data)
     df_data = df_data.set_index('date')
