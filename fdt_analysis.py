@@ -443,6 +443,9 @@ if uploaded_file is not None:
     data_list = []
     # Create a placeholder for the content
     content_placeholder = st.empty()
+    
+    # add a selection box to the sidebar to filter the data by date
+    selected_date = st.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
     # Add a button to show or hide the content
     show_content = st.checkbox("Show the results")
     
@@ -496,8 +499,7 @@ if uploaded_file is not None:
             data_list.append(df_data)
         else:
             st.write("No valid connections found.")
-        # add a selection box to the sidebar to filter the data by date
-        selected_date = st.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
+
         # display the number of valid connections to the user
         total_count_day = len(filtered_data)
         total_count_month = len(df)
