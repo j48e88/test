@@ -296,14 +296,14 @@ if uploaded_file is not None:
     max_crew_dates = [info['date'] for info in data if info['Required Crew'] == max_crew_num]
     min_crew_dates = [info['date'] for info in data if info['Required Crew'] == min_crew_num]
 
-    # create a new DataFrame with the minimum and maximum crew numbers and the corresponding dates
+    # create a new DataFrame with the minimum and maximum crew numbers, the corresponding dates, and the average crew number
     crew_table = pd.DataFrame({'Date': max_crew_dates + min_crew_dates,
                                'The minimum requirement per day': [min_crew_num if date in min_crew_dates else max_crew_num for date in max_crew_dates + min_crew_dates],
-                               'The average crew requirement per month':[avg_crew]})
+                               'Average Crew Number': avg_crew_per_day})
 
     # calculate the crew differences and add new columns to the crew_table DataFrame
-    crew_table['Excessive manpower'] = avg_crew_per_day - crew_table['The minimum requirement']
-    crew_table['Shortage of manpower'] = avg_crew_per_day - crew_table['The minimum requirement']
+    crew_table['Excessive manpower'] = avg_crew_per_day - crew_table['The minimum requirement per day']
+    crew_table['Shortage of manpower'] = avg_crew_per_day - crew_table['The minimum requirement per day']
 
     df_data = pd.DataFrame(data)
     df_data = df_data.set_index('date')
