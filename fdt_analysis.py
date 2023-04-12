@@ -351,7 +351,17 @@ if uploaded_file is not None:
     # Update start and end indices based on the current page index
     start_index = current_page_index * rows_per_page
     end_index = start_index + rows_per_page
-     
+
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated average number of crews needed per day:</h1>", unsafe_allow_html=True)
+    st.write(f"{avg_crew_per_day}")
+    st.write(f"")
+    # Display the total number of crew needed and aircraft type counts
+
+    if st.button("Show the Aircraft Types Counts"):
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
+        st.write("\nType Series 320: ", len(ac_32))
+        st.write("\nType Series 330: ", len(ac_33))
+        
     fdp_rules = {
     "0700-0759": {1: 13, 2: 12.25, 3: 11.5, 4: 10.75, 5: 10, 6: 9.25, 7: 9, 8: 9},
     "0800-1259": {1: 14, 2: 13.25, 3: 12.5, 4: 11.75, 5: 11, 6: 10.25, 7: 9.5, 8: 9},
@@ -386,16 +396,6 @@ if uploaded_file is not None:
     df['diff decimal'] = fdt_decimal
     diff_sum = round(df['diff decimal'].sum(), 2)
     n_flights = len(departures)
-    
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated average number of crews needed per day:</h1>", unsafe_allow_html=True)
-    st.write(f"{avg_crew_per_day}")
-    st.write(f"")
-    # Display the total number of crew needed and aircraft type counts
-
-    if st.button("Show the Aircraft Types Counts"):
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
-        st.write("\nType Series 320: ", len(ac_32),diff_sum)
-        st.write("\nType Series 330: ", len(ac_33))
 
     valid_flights = set()  # set to store flights with a valid connection
     checked = set()  # set to store checked flights
