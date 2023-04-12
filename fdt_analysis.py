@@ -434,7 +434,8 @@ if uploaded_file is not None:
     
     # Show the turnaround / layover flight for the selected stations
     st.write("-----------------------------")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Here are the details regarding the flight types:</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Here are the details regarding the flight types:</h1>", 
+                unsafe_allow_html=True)
     # create an empty list to store the data for each date
     data_list = []
     # Create a placeholder for the content
