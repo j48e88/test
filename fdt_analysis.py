@@ -299,7 +299,7 @@ if uploaded_file is not None:
     # create a new DataFrame with the minimum and maximum crew numbers, the corresponding dates, and the average crew number
     crew_table = pd.DataFrame({'Date': max_crew_dates + min_crew_dates,
                                'The minimum requirement per day': [min_crew_num if date in min_crew_dates else max_crew_num for date in max_crew_dates + min_crew_dates],
-                               'Average Crew Number': avg_crew_per_day})
+                               'Average Crew Number per month': avg_crew_per_day})
 
     # calculate the crew differences and add new columns to the crew_table DataFrame
     crew_table['Difference of manpower'] = avg_crew_per_day - crew_table['The minimum requirement per day']
