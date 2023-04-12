@@ -489,7 +489,8 @@ if uploaded_file is not None:
 
         if len(data) > 0:
             # create a DataFrame from the data list
-            df_data = pd.DataFrame(data, columns=["Flight 1", "DepStn 1", "ArrStn 1", "Flight 2", "DepStn 2", "ArrStn 2", "Sum FDT", "FDP", "Remaining Time", "Type"])
+            df_data = pd.DataFrame(data, columns=["Flight 1", "DepStn 1", "ArrStn 1", "Flight 2", "DepStn 2", "ArrStn 2",
+                                                  "Sum FDT", "FDP", "Remaining Time", "Type"])
             # display the DataFrame as a table using st.write
             st.write(df_data)
             # add the data to the list for the current date
