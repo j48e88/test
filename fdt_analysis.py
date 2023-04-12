@@ -309,6 +309,7 @@ if uploaded_file is not None:
     rows_per_page = 7
     # Total number of pages
     total_pages = len(data) // rows_per_page + 1
+    st.write("-----------------------------")
     # Current page index
     current_page_index = st.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
 
@@ -321,7 +322,7 @@ if uploaded_file is not None:
     page_data = page_data.reset_index()
     page_data = page_data.rename(columns={"crew_num": "Required Crew"})
     # Display the current page's content
-    st.write("-----------------------------")
+
     st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", 
                 unsafe_allow_html=True)
     # Create a placeholder for the content
