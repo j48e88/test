@@ -313,7 +313,7 @@ if uploaded_file is not None:
     # Display the current page's content
     st.write("-----------------------------")
     # Current page index
-    current_page_index = st.sidebar.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
+    current_page_index = st.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
     # Calculate the data range for the current page
     start_index = current_page_index * rows_per_page
     end_index = start_index + rows_per_page
