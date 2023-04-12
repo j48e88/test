@@ -312,16 +312,6 @@ if uploaded_file is not None:
 
     # Display the current page's content
     st.write("-----------------------------")
-    # Current page index
-    current_page_index = st.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
-    # Calculate the data range for the current page
-    start_index = current_page_index * rows_per_page
-    end_index = start_index + rows_per_page
-    page_crew_info = data[start_index:end_index]
-    page_data = df_data.iloc[start_index:end_index].copy()
-    # Reset the index and rename the "Required Crew" column
-    page_data = page_data.reset_index()
-    page_data = page_data.rename(columns={"crew_num": "Required Crew"})
     st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", 
                 unsafe_allow_html=True)
     # Create a placeholder for the content
@@ -334,6 +324,16 @@ if uploaded_file is not None:
     # Update the content based on the checkbox value
     if show_content1:
         st.dataframe(pd.DataFrame(page_data), height=280)
+        # Current page index
+        current_page_index = st.number_input("Page  (To review the crews required on each day)", min_value=1, max_value=total_pages, value=1, step=1) - 1
+        # Calculate the data range for the current page
+        start_index = current_page_index * rows_per_page
+        end_index = start_index + rows_per_page
+        page_crew_info = data[start_index:end_index]
+        page_data = df_data.iloc[start_index:end_index].copy()
+        # Reset the index and rename the "Required Crew" column
+        page_data = page_data.reset_index()
+        page_data = page_data.rename(columns={"crew_num": "Required Crew"})
         show_content2 = st.checkbox("Show the largest and smallest number of crew requirements in this month")  
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
