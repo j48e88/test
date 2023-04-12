@@ -433,8 +433,7 @@ if uploaded_file is not None:
     st.write('\n')
     # Get the list of unique ArrStn and DepStn for populating the selectbox
     stations = df[['ArrStn', 'DepStn']].stack().unique()
-    # add a selection box to the sidebar to filter the data by date
-    selected_date = st.sidebar.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
+    
 
 
     # Show the turnaround / layover flight for the selected stations
@@ -497,7 +496,8 @@ if uploaded_file is not None:
             data_list.append(df_data)
         else:
             st.write("No valid connections found.")
-
+# add a selection box to the sidebar to filter the data by date
+        selected_date = st.sidebar.selectbox("Select a date (For the flight types details)", grouped_data.groups.keys())
         # display the number of valid connections to the user
         total_count_day = len(filtered_data)
         total_count_month = len(df)
