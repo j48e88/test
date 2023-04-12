@@ -211,9 +211,6 @@ if uploaded_file is not None:
     # Create a list of options for the selectbox
     options = unique_dates
 
-    # Display the selectbox in the sidebar
-    st.sidebar.write("----------")
-    st.sidebar.markdown("<h1 style='text-align: center; color: black; font-size: 28px;'>---For Flight Analysis---</h1>", unsafe_allow_html=True)
 
     # Display the filtered flight groups
     with st.container():
