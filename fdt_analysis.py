@@ -351,15 +351,21 @@ if uploaded_file is not None:
     # Update start and end indices based on the current page index
     start_index = current_page_index * rows_per_page
     end_index = start_index + rows_per_page
-
+    reporting_time = [(std - timedelta(minutes=75)).strftime('%H%M') for std in stds]
+    fdt = pd.to_datetime(df['Diff'], format='%H:%M:%S')
+    fdt_decimal = fdt.dt.hour + fdt.dt.minute/60 + fdt.dt.second/3600
+    df['diff decimal'] = fdt_decimal
+    diff_sum = round(df['diff decimal'].sum(), 2)
+    n_flights = len(departures)
+    
     st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated average number of crews needed per day:</h1>", unsafe_allow_html=True)
     st.write(f"{avg_crew_per_day}")
     st.write(f"")
     # Display the total number of crew needed and aircraft type counts
-    fdtsum = sum(df['Diff'])
+
     if st.button("Show the Aircraft Types Counts"):
         st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
-        st.write("\nType Series 320: ", len(ac_32), fdtsum)
+        st.write("\nType Series 320: ", len(ac_32),diff_sum)
         st.write("\nType Series 330: ", len(ac_33))
         
     fdp_rules = {
@@ -390,12 +396,7 @@ if uploaded_file is not None:
     df['date'] = pd.to_datetime(df['Date'], format='%d%b')
     date = df['date']
 
-    reporting_time = [(std - timedelta(minutes=75)).strftime('%H%M') for std in stds]
-    fdt = pd.to_datetime(df['Diff'], format='%H:%M:%S')
-    fdt_decimal = fdt.dt.hour + fdt.dt.minute/60 + fdt.dt.second/3600
-    df['diff decimal'] = fdt_decimal
-    diff_sum = round(df['diff decimal'].sum(), 2)
-    n_flights = len(departures)
+
 
     valid_flights = set()  # set to store flights with a valid connection
     checked = set()  # set to store checked flights
