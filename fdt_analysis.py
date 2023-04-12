@@ -432,8 +432,6 @@ if uploaded_file is not None:
     # Get the list of unique ArrStn and DepStn for populating the selectbox
     stations = df[['ArrStn', 'DepStn']].stack().unique()
     
-
-
     # Show the turnaround / layover flight for the selected stations
     st.write("-----------------------------")
     st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Here are the details regarding the flight types:</h1>", unsafe_allow_html=True)
