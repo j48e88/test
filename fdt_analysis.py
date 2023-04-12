@@ -356,7 +356,7 @@ if uploaded_file is not None:
     st.write(f"{avg_crew_per_day}")
     st.write(f"")
     # Display the total number of crew needed and aircraft type counts
-    fdtsum = sum(df['diff']
+    fdtsum = sum(df['diff'])
     if st.button("Show the Aircraft Types Counts"):
         st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
         st.write("\nType Series 320: ", len(ac_32), fdtsum)
