@@ -358,7 +358,7 @@ if uploaded_file is not None:
     # Display the total number of crew needed and aircraft type counts
     if st.button("Show the Aircraft Types Counts"):
         st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>Aircraft Types Counts:</h1>", unsafe_allow_html=True)
-        st.write("\nType Series 320: ", len(ac_32))
+        st.write("\nType Series 320: ", len(ac_32), diff)
         st.write("\nType Series 330: ", len(ac_33))
         
     fdp_rules = {
