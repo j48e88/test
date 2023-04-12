@@ -307,6 +307,7 @@ if uploaded_file is not None:
     rows_per_page = 7
     # Total number of pages
     total_pages = len(data) // rows_per_page + 1
+    # Display the current page's content
     st.write("-----------------------------")
     st.markdown("<h1 style='text-align: left; color: black; font-size: 30px;'>The number of crews requied on each day is:</h1>", 
                 unsafe_allow_html=True)
@@ -321,7 +322,7 @@ if uploaded_file is not None:
     # Reset the index and rename the "Required Crew" column
     page_data = page_data.reset_index()
     page_data = page_data.rename(columns={"crew_num": "Required Crew"})
-    # Display the current page's content
+
 
     
     # Create a placeholder for the content
