@@ -246,8 +246,13 @@ if uploaded_file is not None:
             flight_info_by_date[date] = []
         flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
 
+
+
+    # Display the current page's content
+    st.write("-----------------------------")
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Types of Flights</h1>", unsafe_allow_html=True)
     # Current page date
-    current_page_date = st.sidebar.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
+    current_page_date = st.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
 
     # Calculate the data range for the current page
     start_index = 0
@@ -256,10 +261,6 @@ if uploaded_file is not None:
     total_turnaround = sum(num_turnarounds.values())
     total_layover = sum(num_layovers.values())
     total_nonreg = sum(num_nonregular.values())
-
-    # Display the current page's content
-    st.write("-----------------------------")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Types of Flights</h1>", unsafe_allow_html=True)
     for item in page_flight_info:
         st.write(item)
 
