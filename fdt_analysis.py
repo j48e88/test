@@ -215,7 +215,7 @@ if uploaded_file is not None:
     st.sidebar.write("----------")
     st.sidebar.markdown("<h1 style='text-align: center; color: black; font-size: 28px;'>---For Flight Analysis---</h1>", unsafe_allow_html=True)
 
-    selected_date = st.selectbox('Date (For Flights stations per day(s))', options = options)
+    
 
     # Filter the flight groups by the selected date
     filtered_groups = [
@@ -226,6 +226,7 @@ if uploaded_file is not None:
     # Display the filtered flight groups
     with st.container():
         st.write("-----------------------------")
+        selected_date = st.selectbox('Date (For Flights stations per day(s))', options = options)
         st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>The daliy flight stations are shown:</h1>", unsafe_allow_html=True)
         # Create a placeholder for the content
         content_placeholder = st.empty()
