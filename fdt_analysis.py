@@ -334,6 +334,9 @@ if uploaded_file is not None:
         # Reset the index and rename the "Required Crew" column
         page_data = page_data.reset_index()
         page_data = page_data.rename(columns={"crew_num": "Required Crew"})
+            # Update start and end indices based on the current page index
+        start_index = current_page_index * rows_per_page
+        end_index = start_index + rows_per_page
         show_content2 = st.checkbox("Show the largest and smallest number of crew requirements in this month")  
         if show_content2:
             # print the crew information and the date and required crew number with the maximum crew number
@@ -346,9 +349,7 @@ if uploaded_file is not None:
     else:
         content_placeholder1.empty()  # Hide the content
 
-    # Update start and end indices based on the current page index
-    start_index = current_page_index * rows_per_page
-    end_index = start_index + rows_per_page
+
 
     st.markdown("<h1 style='text-align: left; color: black; font-size: 25px;'>The estimated average number of crews needed per day:</h1>", unsafe_allow_html=True)
     st.write(f"{avg_crew_per_day}")
