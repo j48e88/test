@@ -284,7 +284,7 @@ if uploaded_file is not None:
     for date, crew_num in sorted(daily_crew_nums.items()):
         avg_crew = avg_crew_per_day
         diff = avg_crew - crew_num
-        data.append({'date': date, 'Required Crew': crew_num, 'Crew Difference': diff})
+        data.append({'date': date, 'Minimum Required Crew per day': crew_num, 'Crew Difference compared with average': diff})
 
     # find the date and required crew number with the maximum/minimum crew number
     max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
