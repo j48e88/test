@@ -287,10 +287,10 @@ if uploaded_file is not None:
         data.append({'date': date, 'Minimum Required Crew per day': crew_num, 'Crew Difference compared with average': diff})
 
     # find the date and required crew number with the maximum/minimum crew number
-    max_crew_num = max(data, key=lambda x: x['Required Crew'])['Required Crew']
-    min_crew_num = min(data, key=lambda x: x['Required Crew'])['Required Crew']
-    max_crew_dates = [info['date'] for info in data if info['Required Crew'] == max_crew_num]
-    min_crew_dates = [info['date'] for info in data if info['Required Crew'] == min_crew_num]
+    max_crew_num = max(data, key=lambda x: x['Minimum Required Crew per day'])['Minimum Required Crew per day']
+    min_crew_num = min(data, key=lambda x: x['Minimum Required Crew per day'])['Minimum Required Crew per day']
+    max_crew_dates = [info['date'] for info in data if info['Minimum Required Crew per day'] == max_crew_num]
+    min_crew_dates = [info['date'] for info in data if info['Minimum Required Crew per day'] == min_crew_num]
 
     # create a new DataFrame with the minimum and maximum crew numbers, the corresponding dates, and the average crew number
     crew_table = pd.DataFrame({'Date': max_crew_dates + min_crew_dates,
