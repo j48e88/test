@@ -93,10 +93,10 @@ if uploaded_file is not None:
 
     def calculate_num_layover(count, dep, arr):
         dep, arr = sorted([dep, arr])
-        layover_count = 0
-        if count % 2 == 1:
-            layover_count += 1
-        return layover_count
+        if (count % 2 == 1 and arr != "HKG"):
+            return (count - 1) // 2
+        else:
+            return 0
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
