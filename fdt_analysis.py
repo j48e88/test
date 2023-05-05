@@ -93,11 +93,10 @@ if uploaded_file is not None:
 
     def calculate_num_layover(count, dep, arr):
         dep, arr = sorted([dep, arr])
-        layover_count = 0
-        if count % 2 == 1:
-            layover_count += 1
-        return layover_count
-
+        if (count % 2 == 1 and arr != "HKG"):
+            return (count - 1) // 2
+        else:
+            return 0
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
@@ -146,10 +145,12 @@ if uploaded_file is not None:
 
     # Calculate number of layovers for each group
     num_layovers = {}
-    for ac_type, dates in ac_dates.items():
-        for date, counts in dates.items():
-            num_turnarounds[(date, ac_type)] =  sum([count % 2 for count in counts])
-            
+    for group, count in groups.items():
+        dep = group[1][0]
+        arr = group[1][1]
+        ac_type = group[2]
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(count, dep, arr)
+
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
     for group, count in groups.items():
