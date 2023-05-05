@@ -93,7 +93,7 @@ if uploaded_file is not None:
 
     def calculate_num_layover(count, dep, arr):
         dep, arr = sorted([dep, arr])
-        if (count % 2 != 0 and arr != "HKG"):
+        if (count % 2 == 1 and arr != "HKG"):
             return (count - 1) // 2
         else:
             return 0
