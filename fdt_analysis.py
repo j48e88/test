@@ -101,7 +101,7 @@ if uploaded_file is not None:
                     dep = group[1][0]
                     arr = group[1][1]
                     if dep == 'HKG' and arr == 'HKG':
-                        layover_count += 1
+                        layover_count -= 1
         return layover_count
 
     def calculate_num_nonregular(groups, date):
