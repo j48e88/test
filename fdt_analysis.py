@@ -92,12 +92,11 @@ if uploaded_file is not None:
     st.write(df)
 
     def calculate_num_layover(count, dep, arr):
-        layover_count = 0
         dep, arr = sorted([dep, arr])
-        if (count % 2 == 1 and arr != "HKG"):
+        if (count % 2 == 1 or arr != "HKG"):
             return (count - 1) // 2
         else:
-            return layover_count
+            return 0
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
