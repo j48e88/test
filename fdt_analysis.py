@@ -94,7 +94,7 @@ if uploaded_file is not None:
     data = []
     used_flights_on_date = set() # initialize set to track used flight numbers on the same day
     for i in range(len(df['Date'])):
-        flight1 = filtered_data.iloc[i]
+        flight1 = df['Date'].iloc[i]
         valid_connection = False
 
         # check for valid connections
