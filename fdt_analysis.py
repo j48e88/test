@@ -91,10 +91,9 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    filtered_data = grouped_data.get_group(selected_date)
     data = []
     used_flights_on_date = set() # initialize set to track used flight numbers on the same day
-    for i in range(len(filtered_data)):
+    for i in range(len(df['Date'])):
         flight1 = filtered_data.iloc[i]
         valid_connection = False
 
