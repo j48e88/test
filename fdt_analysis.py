@@ -91,42 +91,12 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    data = []
-    used_flights_on_date = set() # initialize set to track used flight numbers on the same day
-    for i in range(len(df['Date'])):
-        flight1 = df['Date'].iloc[i]
-        valid_connection = False
-
-        # check for valid connections
-        for j in range(i+1, len(df)):
-            flight2 = df.iloc[j]
-            if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
-                flight1['Flight_No'] != flight2['Flight_No'] and
-                flight1['Date'] == flight2['Date'] and
-                all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_flights) and
-                flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
-                valid_connection = True
-                sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
-                connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
-                valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
-                valid_count1 += 1
-                turn.append(flight2['Flight_No'])
-                fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
-                remaintime = round(fdp - sum_fdt ,2)
-                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
-                                round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
-                used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
-                used_flights_on_date.add(flight2['Flight_No'])
-
-        if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
-            sum_fdt = round(flight1['diff decimal'], 2)
-            invalid_count1 += 1          
-            lay.append(flight1['Flight_No'])
-            fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
-            data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                        "", "", "",
-                        round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+    def calculate_num_layover(count, dep, arr):
+        dep, arr = sorted([dep, arr])
+        layover_count = 0
+        if count % 2 == 1:
+            layover_count += 1
+        return layover_count
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
@@ -174,7 +144,12 @@ if uploaded_file is not None:
             num_turnarounds[(date, ac_type)] = sum([count // 2 for count in counts])
 
     # Calculate number of layovers for each group
-
+    num_layovers = {}
+    for group, count in groups.items():
+        dep = group[1][0]
+        arr = group[1][1]
+        ac_type = group[2]
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(count, dep, arr)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
@@ -266,7 +241,7 @@ if uploaded_file is not None:
         num_nonreg = num_nonregular[(date, ac_type)]
         if date not in flight_info_by_date:
             flight_info_by_date[date] = []
-        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{invalid_count1}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
+        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
 
 
 
