@@ -92,10 +92,19 @@ if uploaded_file is not None:
     st.write(df)
 
     def calculate_num_layover(count, dep, arr, date):
-        dep, arr, date = sorted([dep, arr, date])
-        length = dep, arr, date
-        layover_count = 0
-        if len(length) % 2 == 1:
+        # Sort the DataFrame by the 'date' column
+        df = df.sort_values(by='date')
+
+        # Find the index of the 'dep' date in the 'date' column
+        dep_idx = df[df['date'] == dep].index[0]
+
+        # Find the index of the 'arr' date in the 'date' column
+        arr_idx = df[df['date'] == arr].index[0]
+
+        # Sort the 'dep' and 'arr' variables based on their indices in the 'date' column
+        dep, arr = sorted([df.loc[dep_idx, 'dep'], df.loc[arr_idx, 'arr']])
+        length = len(dep,arr)
+        if length % 2 == 1:
             layover_count += 1
         return layover_count
 
