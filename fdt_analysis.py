@@ -91,49 +91,12 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    # Add a button to show or hide the content
-    show_content = st.checkbox("Show the results")
-    
-    # Update the content based on the checkbox value
-    if show_content:
-        # filter the data by the selected date
-        filtered_data = grouped_data.get_group(selected_date)
-        data = []
-        used_flights_on_date = set() # initialize set to track used flight numbers on the same day
-        for i in range(len(filtered_data)):
-            flight1 = filtered_data.iloc[i]
-            valid_connection = False
-
-            # check for valid connections
-            for j in range(i+1, len(df)):
-                flight2 = df.iloc[j]
-                if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
-                    flight1['Flight_No'] != flight2['Flight_No'] and
-                    flight1['Date'] == flight2['Date'] and
-                    all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_flights) and
-                    flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
-                    valid_connection = True
-                    sum_fdt = round(flight1['diff decimal'] + flight2['diff decimal'], 2)
-                    connection = (flight1['DepStn'], flight1['ArrStn'], flight2['DepStn'], flight2['ArrStn'])
-                    valid_flights.add(f"{flight1['Flight_No']} and {flight2['Flight_No']}")
-                    valid_count += 1
-                    turn.append(flight2['Flight_No'])
-                    fdp = fdp_rules[flight1['Time_Range']][2] if flight2['Flight_No'] in turn else fdp_rules[flight1['Time_Range']][1]
-                    remaintime = round(fdp - sum_fdt ,2)
-                    data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                                flight2['Flight_No'], flight2['DepStn'], flight2['ArrStn'],
-                                round(sum_fdt, 2), round(fdp, 2), round(remaintime, 2), "Turnaround"])
-                    used_flights_on_date.add(flight1['Flight_No']) # add flight numbers to set of used flights on the same day
-                    used_flights_on_date.add(flight2['Flight_No'])
-
-            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
-                sum_fdt = round(flight1['diff decimal'], 2)
-                invalid_count += 1          
-                lay.append(flight1['Flight_No'])
-                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
-                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                            "", "", "",
-                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])
+    def calculate_num_layover(count, dep, arr):
+        dep, arr = sorted([dep, arr])
+        if (count % 2 == 1 and arr != "HKG"):
+            return (count - 1) // 2
+        else:
+            return 0
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
