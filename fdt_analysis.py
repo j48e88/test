@@ -95,7 +95,7 @@ if uploaded_file is not None:
         layover_count = 0
         for group, count in groups.items():
             if group[0] == date and count % 2 == 1:
-                layover_count += 1
+                layover_count += count
         return layover_count
 
     def calculate_num_nonregular(groups, date):
