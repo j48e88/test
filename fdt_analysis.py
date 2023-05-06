@@ -91,12 +91,40 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    def calculate_num_layover(count, dep, arr):
-        dep, arr = sorted([dep, arr])
-        if (count % 2 == 1 and arr != "HKG"):
-            return (count - 1) // 2
-        else:
-            return 0
+    def calculate_num_layover(df):
+        valid_connections = False 
+        used_flights_on_date = set()
+
+        # loop through all flights in the DataFrame
+        for i in range(len(df)):
+            flight1 = df.iloc[i]
+
+            # check for valid connections with all subsequent flights
+            for j in range(i+1, len(df)):
+                flight2 = df.iloc[j]
+
+                # check if the connection is valid
+                if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
+                    flight1['Flight_No'] != flight2['Flight_No'] and
+                    flight1['Date'] == flight2['Date'] and
+                    all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_connections) and
+                    flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
+
+                    # add the connection to the list of valid connections
+                    valid_connections = True
+                
+                    # add the flight to the set of used flights on the date
+                    used_flights_on_date.add(flight1['Flight_No'])
+                    
+            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
+                sum_fdt = round(flight1['diff decimal'], 2)
+                invalid_count += 1          
+                lay.append(flight1['Flight_No'])
+                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
+                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
+                            "", "", "",
+                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])                
+
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
@@ -149,7 +177,7 @@ if uploaded_file is not None:
         dep = group[1][0]
         arr = group[1][1]
         ac_type = group[2]
-        num_layovers[(group[0], ac_type)] = calculate_num_layover(count, dep, arr)
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(df)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
@@ -212,7 +240,71 @@ if uploaded_file is not None:
     options = unique_dates
 
 
+    # Display the filtered flight groups
+    with st.container():
+        st.write("-----------------------------")
+        selected_date = st.selectbox('Date (For Flights stations per day(s))', options = options)
+        # Filter the flight groups by the selected date
+        filtered_groups = [
+            (group[1], count)
+            for group, count in groups.items()
+            if datetime.strptime(group[0], '%d%b').strftime('%d%b') == selected_date]
+        st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>The daliy flight stations are shown:</h1>", unsafe_allow_html=True)
+        # Create a placeholder for the content
+        content_placeholder = st.empty()
+        # Add a button to show or hide the content
+        show_content = st.checkbox("Show the flight stations per day")
+            # Update the content based on the checkbox value
+        if show_content:
+            for count in sorted(filtered_groups):
+                st.write(count)
+        else:
+            content_placeholder.empty()  # Hide the content
+    st.markdown(f"<p style='font-size: 20px;'>On date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
 
+    # Create a dictionary containing all flight information, keyed by date
+    flight_info_by_date = {}
+    for (date, ac_type), num_turnaround in sorted(num_turnarounds.items()):
+        num_layover = num_layovers[(date, ac_type)]
+        num_nonreg = num_nonregular[(date, ac_type)]
+        if date not in flight_info_by_date:
+            flight_info_by_date[date] = []
+        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{num_layover}** layovers, **{num_nonreg}** non-regular flights")        
+
+
+
+    # Display the current page's content
+    st.write("-----------------------------")
+    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Types of Flights</h1>", unsafe_allow_html=True)
+    # Current page date
+    current_page_date = st.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
+
+    # Calculate the data range for the current page
+    start_index = 0
+    end_index = len(flight_info_by_date[current_page_date])
+    page_flight_info = flight_info_by_date[current_page_date][start_index:end_index]
+    total_turnaround = sum(num_turnarounds.values())
+    total_layover = sum(num_layovers.values())
+    total_nonreg = sum(num_nonregular.values())
+    for item in page_flight_info:
+        st.write(item)
+
+    # Display pagination information
+    st.markdown(f"<p style='font-size: 18px;'> On date: <b><span style='color: blue;'>{current_page_date}</b>.</p>", unsafe_allow_html=True)
+
+    # Create a placeholder for the content
+    content_placeholder = st.empty()
+
+    # Add a button to show or hide the content
+    show_content = st.checkbox("Show the total Number of flights in this month:")
+
+    # Update the content based on the checkbox value
+    if show_content:
+        st.markdown(f"<p style='font-size: 20px;'>Turnaround flights: <b><span style='color: red;'>{total_turnaround}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'>Layover flights: <b><span style='color: red;'>{total_layover}</b></p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 20px;'>Non-Regular Flights: <b><span style='color: red;'>{total_nonreg}</b></p>", unsafe_allow_html=True)
+    else:
+        content_placeholder.empty()  # Hide the content
 
 
     # Create a list of crew information, sorted by date
@@ -449,69 +541,3 @@ if uploaded_file is not None:
     else:
         content_placeholder.empty()  # Hide the content
     st.markdown(f"<p style='font-size: 20px;'>You have selected date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
-
-        # Display the filtered flight groups
-    with st.container():
-        st.write("-----------------------------")
-        selected_date = st.selectbox('Date (For Flights stations per day(s))', options = options)
-        # Filter the flight groups by the selected date
-        filtered_groups = [
-            (group[1], count)
-            for group, count in groups.items()
-            if datetime.strptime(group[0], '%d%b').strftime('%d%b') == selected_date]
-        st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>The daliy flight stations are shown:</h1>", unsafe_allow_html=True)
-        # Create a placeholder for the content
-        content_placeholder = st.empty()
-        # Add a button to show or hide the content
-        show_content = st.checkbox("Show the flight stations per day")
-            # Update the content based on the checkbox value
-        if show_content:
-            for count in sorted(filtered_groups):
-                st.write(count)
-        else:
-            content_placeholder.empty()  # Hide the content
-    st.markdown(f"<p style='font-size: 20px;'>On date: <b><span style='color: blue;'>{selected_date}</b>.</p>", unsafe_allow_html=True)
-
-    # Create a dictionary containing all flight information, keyed by date
-    flight_info_by_date = {}
-    for (date, ac_type), num_turnaround in sorted(num_turnarounds.items()):
-        num_layover = num_layovers[(date, ac_type)]
-        num_nonreg = num_nonregular[(date, ac_type)]
-        if date not in flight_info_by_date:
-            flight_info_by_date[date] = []
-        flight_info_by_date[date].append(f"Aircraft Type: **{ac_type}** : **{num_turnaround}** turnarounds, **{invalid_count}** layovers, **{num_nonreg}** non-regular flights")        
-
-
-
-    # Display the current page's content
-    st.write("-----------------------------")
-    st.markdown("<h1 style='text-align: left; color: black; font-size: 28px;'>Types of Flights</h1>", unsafe_allow_html=True)
-    # Current page date
-    current_page_date = st.selectbox('Date (For Types of Flights)', sorted(flight_info_by_date.keys()))
-
-    # Calculate the data range for the current page
-    start_index = 0
-    end_index = len(flight_info_by_date[current_page_date])
-    page_flight_info = flight_info_by_date[current_page_date][start_index:end_index]
-    total_turnaround = sum(num_turnarounds.values())
-    total_layover = sum(num_layovers.values())
-    total_nonreg = sum(num_nonregular.values())
-    for item in page_flight_info:
-        st.write(item)
-
-    # Display pagination information
-    st.markdown(f"<p style='font-size: 18px;'> On date: <b><span style='color: blue;'>{current_page_date}</b>.</p>", unsafe_allow_html=True)
-
-    # Create a placeholder for the content
-    content_placeholder = st.empty()
-
-    # Add a button to show or hide the content
-    show_content = st.checkbox("Show the total Number of flights in this month:")
-
-    # Update the content based on the checkbox value
-    if show_content:
-        st.markdown(f"<p style='font-size: 20px;'>Turnaround flights: <b><span style='color: red;'>{total_turnaround}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size: 20px;'>Layover flights: <b><span style='color: red;'>{total_layover}</b></p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size: 20px;'>Non-Regular Flights: <b><span style='color: red;'>{total_nonreg}</b></p>", unsafe_allow_html=True)
-    else:
-        content_placeholder.empty()  # Hide the content
