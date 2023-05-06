@@ -91,17 +91,12 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    def calculate_num_layover(groups, date):
-        invalid_count = 0
-        for group, count in groups.items():
-            if group[0] == date and group[2] == ac_type:
-                dep1, arr1 = group[1][0], group[1][1]
-                dep2, arr2 = group[3][0], group[3][1]
-
-                # check if the layover meets the criteria
-                if dep2 != arr1 and arr1 != 'HKG':
-                    invalid_count += count
-        return invalid_count
+    def calculate_num_layover(count, dep, arr, date):
+        dep, arr = sorted([dep, arr])
+        layover_count = 0
+        if count % 2 == 1 and dep.date() == date and arr.date() == date:
+            layover_count += 1
+        return layover_count
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
@@ -154,7 +149,7 @@ if uploaded_file is not None:
         dep = group[1][0]
         arr = group[1][1]
         ac_type = group[2]
-        num_layovers[(group[0], ac_type)] = calculate_num_layover(groups, date)
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(count, dep, arr)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
