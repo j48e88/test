@@ -150,7 +150,7 @@ if uploaded_file is not None:
         dep = group[1][0]
         arr = group[1][1]
         ac_type = group[2]
-        num_layovers[(group[0], ac_type)] = calculate_num_layover(dep, arr, date)
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(dep, arr, date, ac_type)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
