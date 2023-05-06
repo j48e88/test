@@ -97,7 +97,7 @@ if uploaded_file is not None:
         layover_count = 0
         if len(length) % 2 == 1:
             layover_count += 1
-        return f"Layover count for {ac_type}: {layover_count}"
+        return layover_count, ac_type
     
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
