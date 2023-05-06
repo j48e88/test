@@ -91,40 +91,12 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    def calculate_num_layover(df):
-        valid_connections = False 
-        used_flights_on_date = set()
-
-        # loop through all flights in the DataFrame
-        for i in range(len(df)):
-            flight1 = df.iloc[i]
-
-            # check for valid connections with all subsequent flights
-            for j in range(i+1, len(df)):
-                flight2 = df.iloc[j]
-
-                # check if the connection is valid
-                if (flight1['ArrStn'] == flight2['DepStn'] and flight1['DepStn'] == flight2['ArrStn'] and
-                    flight1['Flight_No'] != flight2['Flight_No'] and
-                    flight1['Date'] == flight2['Date'] and
-                    all(flight1['Flight_No'] not in x and flight2['Flight_No'] not in x for x in valid_connections) and
-                    flight1['Flight_No'] not in used_flights_on_date and flight2['Flight_No'] not in used_flights_on_date):
-
-                    # add the connection to the list of valid connections
-                    valid_connections = True
-                
-                    # add the flight to the set of used flights on the date
-                    used_flights_on_date.add(flight1['Flight_No'])
-                    
-            if not valid_connection and all(flight1['Flight_No'] not in x for x in valid_flights):
-                sum_fdt = round(flight1['diff decimal'], 2)
-                invalid_count += 1          
-                lay.append(flight1['Flight_No'])
-                fdp = fdp_rules[flight1['Time_Range']][1] if flight1['Flight_No'] in lay else fdp_rules[flight1['Time_Range']][2]
-                data.append([flight1['Flight_No'], flight1['DepStn'], flight1['ArrStn'],
-                            "", "", "",
-                            round(sum_fdt, 2), round(fdp, 2), round(fdp-sum_fdt, 2), "Layover"])                
-
+    def calculate_num_layover(count, dep, arr):
+        dep, arr = sorted([dep, arr])
+        if (count % 2 == 1 and arr != "HKG"):
+            return (count - 1) // 2
+        else:
+            return 0
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
@@ -177,7 +149,7 @@ if uploaded_file is not None:
         dep = group[1][0]
         arr = group[1][1]
         ac_type = group[2]
-        num_layovers[(group[0], ac_type)] = calculate_num_layover(df)
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(count, dep, arr)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
