@@ -98,15 +98,16 @@ if uploaded_file is not None:
         invalid_count = 0
         for i in range(len(legs)-1):
             # Determine the correct aircraft type for the current leg
-            ac_type = row['ac_type']
             ac_type_leg = ac_type if i == 0 else None
             if legs[i][1] > legs[i+1][0]:
                 invalid_count += 1
             else:
                 # Add the correct aircraft type to the flight information string
-                if row['ac_type'] == '32':
+                if ac_type_leg == '32S':
                     legs[i] = f"{legs[i][0]}-{legs[i][1]} (A320)"
-                elif row['ac_type'] == '33':
+                elif ac_type_leg == '32H':
+                    legs[i] = f"{legs[i][0]}-{legs[i][1]} (A320)"
+                elif ac_type_leg == '333':
                     legs[i] = f"{legs[i][0]}-{legs[i][1]} (A330)"
                 else:
                     legs[i] = f"{legs[i][0]}-{legs[i][1]}"
