@@ -92,8 +92,6 @@ if uploaded_file is not None:
     st.write(df)
 
     def calculate_num_layover(count, dep, arr, date):
-        # Sort the DataFrame by the 'date' column
-        df = df.sort_values(by='date')
 
         # Find the index of the 'dep' date in the 'date' column
         dep_idx = df[df['date'] == dep].index[0]
