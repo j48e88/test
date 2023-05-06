@@ -92,9 +92,9 @@ if uploaded_file is not None:
     st.write(df)
 
     def calculate_num_layover(count, dep, arr, date):
-        dep, arr = sorted([dep, arr, date])
+        dep, arr, date = sorted([dep, arr, date])
         layover_count = 0
-        if len(dep, arr) % 2 == 1:
+        if len(count) % 2 == 1:
             layover_count += 1
         return layover_count
 
