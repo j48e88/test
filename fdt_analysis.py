@@ -95,7 +95,7 @@ if uploaded_file is not None:
         dep, arr, date = sorted([dep, arr, date])
         length = ((dep, arr, date), ac_type)
         layover_count = 0
-        if len(length[0]) % 2 == 1:
+        if len(length) % 2 == 1:
             layover_count += 1
         return layover_count
     
