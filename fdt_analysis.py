@@ -91,12 +91,17 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    def calculate_num_layover(count, dep, arr):
-        dep, arr = sorted([dep, arr])
-        if (count % 2 == 1 and arr != "HKG"):
-            return (count - 1) // 2
-        else:
-            return 0
+    def calculate_num_layover(groups, date):
+        invalid_count = 0
+        for group, count in groups.items():
+            if group[0] == date and group[2] == ac_type:
+                dep1, arr1 = group[1][0], group[1][1]
+                dep2, arr2 = group[3][0], group[3][1]
+
+                # check if the layover meets the criteria
+                if dep2 != arr1 and arr1 != 'HKG':
+                    invalid_count += count
+        return invalid_count
 
     def calculate_num_nonregular(groups, date):
         non_regular_count = 0
