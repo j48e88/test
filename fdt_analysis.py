@@ -91,8 +91,7 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    def calculate_num_layover(groups, count, dep, arr, date):
-        dep, arr = sorted([dep, arr])
+    def calculate_num_layover(groups, date):
         layover_count = 0
         for group, count in groups.items():
             if group[0] == date and count % 2 == 1:
