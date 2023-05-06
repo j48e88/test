@@ -94,10 +94,10 @@ if uploaded_file is not None:
     def calculate_num_layover(count, dep, arr, date):
 
         # Find the index of the 'dep' date in the 'date' column
-        dep_idx = df[df['date'] == dep].index[0]
+        dep_idx = df[df['Date'] == dep].index[0]
 
         # Find the index of the 'arr' date in the 'date' column
-        arr_idx = df[df['date'] == arr].index[0]
+        arr_idx = df[df['Date'] == arr].index[0]
 
         # Sort the 'dep' and 'arr' variables based on their indices in the 'date' column
         dep, arr = sorted([df.loc[dep_idx, 'dep'], df.loc[arr_idx, 'arr']])
