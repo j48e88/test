@@ -91,14 +91,24 @@ if uploaded_file is not None:
     st.write("The reversed excel data is as follow:")
     st.write(df)
 
-    def calculate_num_layover(count, dep, arr, date):
+    def calculate_num_layover(count, dep, arr, date, ac_type):
         legs = [(dep, arr)]
         for _ in range(count-1):
             legs.append((date, date))
         invalid_count = 0
         for i in range(len(legs)-1):
+            # Determine the correct aircraft type for the current leg
+            ac_type_leg = ac_type if i == 0 else None
             if legs[i][1] > legs[i+1][0]:
                 invalid_count += 1
+            else:
+                # Add the correct aircraft type to the flight information string
+                if ac_type_leg == '32':
+                    legs[i] = f"{legs[i][0]}-{legs[i][1]} (A320)"
+                elif ac_type_leg == '33':
+                    legs[i] = f"{legs[i][0]}-{legs[i][1]} (A330)"
+                else:
+                    legs[i] = f"{legs[i][0]}-{legs[i][1]}"
         return invalid_count
 
     def calculate_num_nonregular(groups, date):
