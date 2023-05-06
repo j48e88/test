@@ -95,7 +95,7 @@ if uploaded_file is not None:
         dep, arr = sorted([dep, arr])
         length = sorted([(dep, arr), date], key=lambda x: x[0])
         layover_count = 0
-        if len(length) % 2 == 1 or (len(length) % 2 == 1 and dep != arr):
+        if len(length) % 2 == 1:
             layover_count += 1
         return layover_count
 
