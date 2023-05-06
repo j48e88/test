@@ -90,14 +90,11 @@ if uploaded_file is not None:
     # Display the preprocessed data and allow the user to download it as an Excel file
     st.write("The reversed excel data is as follow:")
     st.write(df)
-    dates = df['Date']
-    count_sorted = [count[i] for i in dates.argsort()]
 
-    # Now you can use the sorted count variable in your function
-    def calculate_num_layover(count_sorted, dep, arr):
-        dep, arr = sorted([dep, arr])
+    def calculate_num_layover(count, dep, arr, date):
+        dep, arr = sorted([dep, arr, date])
         layover_count = 0
-        if len(count_sorted) % 2 == 1:
+        if len(dep, arr) % 2 == 1:
             layover_count += 1
         return layover_count
 
@@ -152,7 +149,7 @@ if uploaded_file is not None:
         dep = group[1][0]
         arr = group[1][1]
         ac_type = group[2]
-        num_layovers[(group[0], ac_type)] = calculate_num_layover(count_sorted, dep, arr)
+        num_layovers[(group[0], ac_type)] = calculate_num_layover(count, dep, arr)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
