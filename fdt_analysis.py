@@ -92,11 +92,13 @@ if uploaded_file is not None:
     st.write(df)
 
     def calculate_num_layover(count, dep, arr, date):
-        dep, arr = sorted([dep, arr])
-        length = sorted([count, date])
+        legs = [(dep, arr)]
+        for _ in range(count-1):
+            legs.append((date, date))
         invalid_count = 0
-        if len(length) % 2 == 1 :
-            invalid_count += 1
+        for i in range(len(legs)-1):
+            if legs[i][1] > legs[i+1][0]:
+                invalid_count += 1
         return invalid_count
 
     def calculate_num_nonregular(groups, date):
