@@ -145,11 +145,9 @@ if uploaded_file is not None:
 
     # Calculate number of layovers for each group
     num_layovers = {}
-    for group, count in groups.items():
-        dep = group[1][0]
-        arr = group[1][1]
-        ac_type = group[2]
-        num_layovers[(date, ac_type)] = calculate_num_layover(count, dep, arr)
+    for ac_type, dates in ac_dates.items():
+        for date, counts in dates.items():
+            num_turnarounds[(date, ac_type)] = calculate_num_layover(count, dep, arr)
 
     # Calculate number of non-regular flights for each date
     num_nonregular = {}
