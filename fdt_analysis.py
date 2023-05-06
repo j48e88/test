@@ -98,6 +98,7 @@ if uploaded_file is not None:
         invalid_count = 0
         for i in range(len(legs)-1):
             # Determine the correct aircraft type for the current leg
+            ac_type = row['ac_type']
             ac_type_leg = ac_type if i == 0 else None
             if legs[i][1] > legs[i+1][0]:
                 invalid_count += 1
